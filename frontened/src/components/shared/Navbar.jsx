@@ -1,45 +1,64 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Button } from "../ui/button.jsx";
-
-// ui shade cn , we add externally
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover.jsx";
 import { Avatar, AvatarImage } from "../ui/avatar.jsx";
-import { LogOut, User2 } from "lucide-react";
-
+import { LogOut, User2, Menu, X } from "lucide-react";
+import {Link} from "react-router-dom"
 export const Navbar = () => {
+  // if user logged in->show user icon
+  // else show login logout button
   const user = false;
+
+  // using md:hidder for showing mobile type version
+  // using hidden md:flex for showing desktop version
+  // it show hamburgericon for menu open and X for crossing that icon and hidding
+  //menu
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // using shade ui cn i used avtar and popover for profile view
   const popContent = (
     <Popover>
+      {/* as child here used because i don't want brwoswer to add new div to my existing data
+      that i sending to broweser to render
+     */}
       <PopoverTrigger asChild>
         <Avatar className="cursor-pointer">
           <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
         </Avatar>
       </PopoverTrigger>
+
+      {/* popover content containg image ,name,status ,logout and view prfile */}
       <PopoverContent className="w-80">
-        {/* --------------------------------------------------------------------------------------------------------------------------------------- */}
-        <div className="flex gap-4 space-y-2">
-          <Avatar className="cursor-pointer">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-          </Avatar>
-          {/* containing details for user we need to update when we have backened data who login with it */}
-          <div>
-            <h4 className="font-medium">Rahul Saha</h4>
-            <p className="text-xs text-muted-foreground">
-              <span className="font-medium"> Status - </span> Student
-            </p>
+        <div className="flex flex-col gap-2 mb-4">
+          <div className="flex items-center gap-4">
+            {/* image */}
+            <Avatar className="cursor-pointer">
+              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            </Avatar>
+
+            {/* data  */}
+            <div>
+              <h4 className="font-medium">Rahul Saha</h4>
+              <p className="text-xs text-muted-foreground">
+                <span className="font-medium">Status - </span> Student
+              </p>
+            </div>
           </div>
-          {/* ---------------------------------------------------------------------------------------------------------------------------------------------------------- */}
         </div>
-        <div className="flex flex-col text-gray-600">
-          <div className="flex w-fit items-center gap-2 cursor-pointer">
+
+        {/* view profile */}
+        <div className="flex flex-col gap-2 text-gray-600">
+          <div className="flex items-center gap-2 cursor-pointer">
             <User2 className="text-blue-500" />
-            <Button className="cursor-pointer" variant="link">
+            <Button variant="link" className="cursor-pointer">
               View Profile
             </Button>
           </div>
-          <div className="flex w-fit items-center gap-2 cursor-pointer">
+
+          {/* logout  */}
+          <div className="flex items-center gap-2 cursor-pointer">
             <LogOut className="text-red-500" />
-            <Button className="cursor-pointer" variant="link">
+            <Button variant="link" className="cursor-pointer">
               Logout
             </Button>
           </div>
@@ -48,35 +67,80 @@ export const Navbar = () => {
     </Popover>
   );
 
+  //  login sign button
   const LoginSignup = (
     <div className="flex flex-col sm:flex-row gap-2">
-      <Button
-        className="border border-indigo-600 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200 px-4 py-2 rounded w-full sm:w-auto"
-        variant="outline"
-      >
-        LOGIN
-      </Button>
-      <Button className="bg-indigo-600 hover:bg-indigo-700 text-white transition-colors duration-200 px-4 py-2 rounded w-full sm:w-auto">
-        SIGN UP
-      </Button>
+      <Link to="login">
+        <Button
+          className="border border-indigo-600 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200 px-4 py-2 rounded w-full sm:w-auto"
+          variant="outline"
+        >
+          LOGIN
+        </Button>
+      </Link>
+      <Link to="/signup">
+        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white transition-colors duration-200 px-4 py-2 rounded w-full sm:w-auto">
+          SIGN UP
+        </Button>
+      </Link>
     </div>
   );
 
   return (
-    <div className="bg-white ">
+    // showing website name
+    <nav className="bg-white shadow">
       <div className="flex items-center justify-between mx-auto max-w-6xl h-16 px-4">
-        <h1 className="text-2xl font-bold ">
-          Job<span className="text-indigo-600 hover:text-indigo-800">Sphere</span>
+        <h1 className="text-2xl font-bold">
+          Job
+          <span className="text-indigo-600 hover:text-indigo-800">Sphere</span>
         </h1>
-        <div className="flex items-center gap-12">
+
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-12">
           <ul className="flex font-medium items-center gap-5">
-            <li>Home</li>
-            <li>Jobs</li>
-            <li>Browse</li>
+            <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
+              Home
+            </li>
+            <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
+              Jobs
+            </li>
+            <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
+              Browse
+            </li>
           </ul>
+
           {!user ? LoginSignup : popContent}
         </div>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center">
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 rounded-md hover:bg-gray-100"
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
-    </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden px-4 pb-4 space-y-3">
+          <ul className="flex flex-col gap-2">
+            <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
+              Home
+            </li>
+            <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
+              Jobs
+            </li>
+            <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
+              Browse
+            </li>
+          </ul>
+          {!user && LoginSignup}
+          {user && popContent}
+        </div>
+      )}
+    </nav>
   );
 };

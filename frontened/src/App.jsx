@@ -1,11 +1,12 @@
-import { createBrowserRouter } from "react-router-dom";
-import { Navbar } from "./components/shared/navbar";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./components/auth/login";
 import Signup from "./components/auth/signup";
+import Home from "./components/Home";
+
 const appRouter = createBrowserRouter([
   {
     path: "/",
-    // element: <Home />,
+    element: <Home />,
   },
   {
     path: "/login",
@@ -19,10 +20,7 @@ const appRouter = createBrowserRouter([
 function App() {
   return (
     <>
-      <Navbar />
-      <div className="flex min-h-svh flex-col items-center justify-center">
-        {/* <Button>Click me</Button> */}
-      </div>
+      <RouterProvider router={appRouter} />
     </>
   );
 }
