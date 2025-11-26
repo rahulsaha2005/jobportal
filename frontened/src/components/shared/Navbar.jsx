@@ -5,9 +5,9 @@ import { Avatar, AvatarImage } from "../ui/avatar.jsx";
 import { LogOut, User2, Menu, X } from "lucide-react";
 import {Link} from "react-router-dom"
 export const Navbar = () => {
-  // if user logged in->show user icon
+  // if User logged in->show User icon
   // else show login logout button
-  const user = false;
+  const User = false;
 
   // using md:hidder for showing mobile type version
   // using hidden md:flex for showing desktop version
@@ -70,7 +70,7 @@ export const Navbar = () => {
   //  login sign button
   const LoginSignup = (
     <div className="flex flex-col sm:flex-row gap-2">
-      <Link to="login">
+      <Link to="/login">
         <Button
           className="border border-indigo-600 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200 px-4 py-2 rounded w-full sm:w-auto"
           variant="outline"
@@ -109,7 +109,7 @@ export const Navbar = () => {
             </li>
           </ul>
 
-          {!user ? LoginSignup : popContent}
+          {!User ? LoginSignup : popContent}
         </div>
 
         {/* Mobile Menu Button */}
@@ -137,8 +137,8 @@ export const Navbar = () => {
               Browse
             </li>
           </ul>
-          {!user && LoginSignup}
-          {user && popContent}
+          {!User && LoginSignup}
+          {User && popContent}
         </div>
       )}
     </nav>
