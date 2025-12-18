@@ -5,22 +5,23 @@ import { Button } from "./ui/button";
 
 export default function HeroSection() {
   return (
-    
+    <div className="mt-5">
       <div className="relative z-10 flex flex-col gap-6 max-w-3xl mx-auto">
         {/* Tagline badge */}
-        <span className="mx-auto px-5 py-2 rounded-full text-sm md:text-base bg-white text-purple-600 font-semibold shadow-lg">
+        <span className="mx-auto px-5 py-2 rounded-full text-[12px] md:text-base bg-white text-purple-600 font-semibold shadow-lg">
           🚀 Empowering Millions to Find Their Dream Jobs 🚀
         </span>
 
         {/* Heading */}
         <h1 className="text-3xl md:text-5xl font-bold leading-snug">
-          Search, Apply & <br /> 
+          Search, Apply & <br />
           <span className="text-yellow-300">Dream Jobs</span>
         </h1>
 
         {/* Subheading */}
         <p className="text-lg md:text-xl text-gray-200">
-          Where your career aspirations turn into reality — fast, simple, and reliable.
+          Where your career aspirations turn into reality — fast, simple, and
+          reliable.
         </p>
 
         {/* Search bar */}
@@ -34,7 +35,7 @@ export default function HeroSection() {
             <Search className="h-5 w-5 text-gray-800" />
           </Button>
         </div>
-      
+      </div>
     </div>
   );
 }
