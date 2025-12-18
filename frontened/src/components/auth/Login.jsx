@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import { Navbar } from "../shared/navbar";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../ui/input";
-import { RadioGroup } from "../ui/radio-group";
 import { Button } from "../ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { USER_API_END_POINT } from "../../utils/constant";
+import axios from "axios";
 
-export default function login() {
+export default function login({ setUser }) {
   const [input, setInput] = useState({
     email: "",
     password: "",
     role: "",
   });
+  const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -19,17 +21,37 @@ export default function login() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(input);
+    // console.log(input);
+    let res;
+    try {
+      res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Something went wrong");
+      return;
+    }
+
+    if (res.data.success) {
+      setUser(true);
+      navigate("/");
+      console.log(input);
+      toast.success(res.data.message);
+    }
     // Handle login logic here
   };
 
   return (
     <div>
-      <Navbar />
-      <div className="flex items-center justify-center max-w-7xl mx-auto">
+      
+      <div className="flex items-center justify-center w-full md:max-w-7xl mx-auto">
         <form
           onSubmit={submitHandler}
-          className="w-1/2 border border-gray-200 rounded-md p-6 my-10"
+          className="w-full md:w-1/2 border border-gray-200 rounded-md p-4 my-10"
         >
           <h1 className="font-bold text-xl mb-5 text-center">Login</h1>
 

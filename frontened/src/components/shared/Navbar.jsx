@@ -3,12 +3,10 @@ import { Button } from "../ui/button.jsx";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover.jsx";
 import { Avatar, AvatarImage } from "../ui/avatar.jsx";
 import { LogOut, User2, Menu, X } from "lucide-react";
-import {Link} from "react-router-dom"
-export const Navbar = () => {
+import { Link } from "react-router-dom";
+export const Navbar = ({ User, setUser }) => {
   // if User logged in->show User icon
   // else show login logout button
-  const User = false;
-
   // using md:hidder for showing mobile type version
   // using hidden md:flex for showing desktop version
   // it show hamburgericon for menu open and X for crossing that icon and hidding
