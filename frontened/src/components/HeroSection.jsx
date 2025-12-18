@@ -5,11 +5,7 @@ import { Button } from "./ui/button";
 
 export default function HeroSection() {
   return (
-    <div className="relative text-center bg-linear-to-r from-purple-600 to-blue-500 text-white py-20 px-4 overflow-hidden">
-      {/* Decorative circles */}
-      <div className="absolute -top-32 -left-32 w-64 h-64 bg-purple-400 rounded-full opacity-30 animate-pulse"></div>
-      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-400 rounded-full opacity-20 animate-pulse"></div>
-
+    
       <div className="relative z-10 flex flex-col gap-6 max-w-3xl mx-auto">
         {/* Tagline badge */}
         <span className="mx-auto px-5 py-2 rounded-full text-sm md:text-base bg-white text-purple-600 font-semibold shadow-lg">
@@ -18,7 +14,7 @@ export default function HeroSection() {
 
         {/* Heading */}
         <h1 className="text-3xl md:text-5xl font-bold leading-snug">
-          Search, Apply & <br /> Get Your{" "}
+          Search, Apply & <br /> 
           <span className="text-yellow-300">Dream Jobs</span>
         </h1>
 
@@ -38,7 +34,7 @@ export default function HeroSection() {
             <Search className="h-5 w-5 text-gray-800" />
           </Button>
         </div>
-      </div>
+      
     </div>
   );
 }

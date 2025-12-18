@@ -3,7 +3,7 @@ import { Button } from "../ui/button.jsx";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover.jsx";
 import { Avatar, AvatarImage } from "../ui/avatar.jsx";
 import { LogOut, User2, Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 export const Navbar = ({ User, setUser }) => {
   // if User logged in->show User icon
   // else show login logout button
@@ -12,7 +12,7 @@ export const Navbar = ({ User, setUser }) => {
   // it show hamburgericon for menu open and X for crossing that icon and hidding
   //menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
+  const navigate = useNavigate();
   // using shade ui cn i used avtar and popover for profile view
   const popContent = (
     <Popover>
@@ -97,7 +97,7 @@ export const Navbar = ({ User, setUser }) => {
         <div className="hidden md:flex items-center gap-12">
           <ul className="flex font-medium items-center gap-5">
             <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
-              Home
+              <Link to="/">Home</Link>
             </li>
             <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
               Jobs
@@ -126,7 +126,7 @@ export const Navbar = ({ User, setUser }) => {
         <div className="md:hidden px-4 pb-4 space-y-3">
           <ul className="flex flex-col gap-2">
             <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
-              Home
+              <Link to="/">Home</Link>
             </li>
             <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
               Jobs
