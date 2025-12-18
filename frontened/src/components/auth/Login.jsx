@@ -6,6 +6,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { USER_API_END_POINT } from "../../utils/constant";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "../../redux/authSlice";
+import store from "../../redux/store";
+import { Loader2 } from "lucide-react";
 
 export default function login({ setUser }) {
   const [input, setInput] = useState({
@@ -13,7 +17,9 @@ export default function login({ setUser }) {
     password: "",
     role: "",
   });
+  const { loading } = useSelector((store) => store.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -24,6 +30,7 @@ export default function login({ setUser }) {
     // console.log(input);
     let res;
     try {
+      dispatch(setLoading(true));
       res = await axios.post(`${USER_API_END_POINT}/login`, input, {
         headers: {
           "Content-Type": "application/json",
@@ -34,6 +41,8 @@ export default function login({ setUser }) {
       console.log(error);
       toast.error(error.response?.data?.message || "Something went wrong");
       return;
+    } finally {
+      dispatch(setLoading(false));
     }
 
     if (res.data.success) {
@@ -47,7 +56,6 @@ export default function login({ setUser }) {
 
   return (
     <div>
-      
       <div className="flex items-center justify-center w-full md:max-w-7xl mx-auto">
         <form
           onSubmit={submitHandler}
@@ -106,10 +114,15 @@ export default function login({ setUser }) {
               <Label htmlFor="student">Student</Label>
             </div>
           </div>
-
-          <Button type="submit" className="w-full my-4 bg-[#4f39f6]">
-            Submit
-          </Button>
+          {loading ? (
+            <Button className="w-full my-4 bg-[#4f39f6]">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please Wait
+            </Button>
+          ) : (
+            <Button type="submit" className="w-full my-4 bg-[#4f39f6]">
+              Login
+            </Button>
+          )}
 
           <p className="text-xs text-gray-500 text-center">
             Don't have an account?{" "}

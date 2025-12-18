@@ -7,8 +7,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { USER_API_END_POINT } from "../../utils/constant";
 import { toast } from "sonner";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import store from "../../redux/store";
+import { setLoading } from "../../redux/authSlice";
+import { Loader2 } from "lucide-react";
 
-export default function Signup({setUser}) {
+export default function Signup({ setUser }) {
   const [input, setInput] = useState({
     fullname: "",
     email: "",
@@ -20,6 +24,8 @@ export default function Signup({setUser}) {
   const [preview, setPreview] = useState(null);
   const [open, setOpen] = useState(false);
   const naviagte = useNavigate();
+  const dispatch = useDispatch();
+  const { loading } = useSelector((store) => store.auth);
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -37,23 +43,26 @@ export default function Signup({setUser}) {
     e.preventDefault();
     let res;
     try {
+      dispatch(setLoading(true));
       res = await axios.post(`${USER_API_END_POINT}/register`, input, {
         headers: {
-          "Content-Type": "application/json", 
+          "Content-Type": "application/json",
         },
-        withCredentials: true, 
+        withCredentials: true,
       });
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || "Something went wrong");
-      return; 
+      return;
+    } finally {
+      dispatch(setLoading(false));
     }
 
     if (res.data.success) {
       naviagte("/login");
       console.log(input);
       toast.success(res.data.message);
-    }login
+    }
     // After successful signup, navigate to login or dashboard
   };
   useEffect(() => {
@@ -70,7 +79,6 @@ export default function Signup({setUser}) {
           className="w-full md:w-1/2 border border-gray-200 rounded-md p-4 my-10"
         >
           <h1 className="font-bold text-xl mb-5 text-center">Sign Up</h1>
-
           <div className="my-2">
             <Label>Full Name</Label>
             <Input
@@ -81,7 +89,6 @@ export default function Signup({setUser}) {
               placeholder="Enter Your Name"
             />
           </div>
-
           <div className="my-2">
             <Label>Email</Label>
             <Input
@@ -92,7 +99,6 @@ export default function Signup({setUser}) {
               placeholder="Enter Your Email"
             />
           </div>
-
           <div className="my-2">
             <Label>Phone Number</Label>
             <Input
@@ -103,7 +109,6 @@ export default function Signup({setUser}) {
               placeholder="Enter Your Phone Number"
             />
           </div>
-
           <div className="my-2">
             <Label>Password</Label>
             <Input
@@ -114,7 +119,6 @@ export default function Signup({setUser}) {
               placeholder="Enter Your Password"
             />
           </div>
-
           <Label>Profession</Label>
           <div>
             <RadioGroup
@@ -147,7 +151,6 @@ export default function Signup({setUser}) {
               </div>
             </RadioGroup>
           </div>
-
           <div className="flex flex-col gap-2">
             <Label>Profile</Label>
 
@@ -187,11 +190,16 @@ export default function Signup({setUser}) {
               </div>
             )}
           </div>
-
-          <Button type="submit" className="w-full my-4 bg-[#4f39f6]">
-            Submit
-          </Button>
-
+          {loading ? (
+            <Button className="w-full my-4 bg-[#4f39f6]">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please Wait
+            </Button>
+          ) : (
+            <Button type="submit" className="w-full my-4 bg-[#4f39f6]">
+              Sign Up
+            </Button>
+          )}
+          ;
           <p className="text-xs text-gray-500 text-center">
             Already have an account?{" "}
             <Link to="/login" replace className="text-red-600 text-sm">
