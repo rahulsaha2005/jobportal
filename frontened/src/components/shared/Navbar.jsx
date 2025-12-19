@@ -100,10 +100,10 @@ export const Navbar = ({ User, setUser }) => {
               <Link to="/">Home</Link>
             </li>
             <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
-              Jobs
+              <Link to="/Jobs">Jobs</Link>
             </li>
             <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
-              Browse
+              <Link to="/Browse">Browse</Link>
             </li>
           </ul>
 
@@ -129,10 +129,10 @@ export const Navbar = ({ User, setUser }) => {
               <Link to="/">Home</Link>
             </li>
             <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
-              Jobs
+              <Link to="/Jobs">Jobs</Link>
             </li>
             <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
-              Browse
+              <Link to="/Browse">Browse</Link>
             </li>
           </ul>
           {!User && LoginSignup}
