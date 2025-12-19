@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 
 export default function HeroSection() {
   return (
-    <div className="mt-5">
+    <div className="mt-5 text-center">
       <div className="relative z-10 flex flex-col gap-6 max-w-3xl mx-auto">
         {/* Tagline badge */}
         <span className="mx-auto px-5 py-2 rounded-full text-[12px] md:text-base bg-white text-purple-600 font-semibold shadow-lg">
