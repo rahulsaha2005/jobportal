@@ -56,10 +56,14 @@ export default function login({ setUser }) {
 
   return (
     <div>
-      <div className="flex items-center justify-center w-full md:max-w-7xl mx-auto">
+      <div className=" relative bg-linear-to-r from-purple-600 to-blue-500 min-h-screen w-full overflow-hidden flex items-center justify-center px-4">
+        {/* Decorative circles */}
+        <div className="absolute -top-32 -left-32 w-64 h-64 bg-purple-400 rounded-full opacity-30 animate-pulse"></div>
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-400 rounded-full opacity-20 animate-pulse"></div>
+
         <form
           onSubmit={submitHandler}
-          className="w-full md:w-1/2 border border-gray-200 rounded-md p-4 my-10"
+          className="bg-white m-4 text-black w-full max-w-md md:max-w-lg border border-gray-200 rounded-md p-6 z-10"
         >
           <h1 className="font-bold text-xl mb-5 text-center">Login</h1>
 
