@@ -38,9 +38,10 @@ export const Navbar = () => {
 
             {/* data  */}
             <div>
-              <h4 className="font-medium">{user.fullname}</h4>
+              <h4 className="font-medium">{user ? user.fullname : null}</h4>
               <p className="text-xs text-muted-foreground">
-                <span className="font-medium">Status - </span> {user.role}
+                <span className="font-medium">Status - </span>{" "}
+                {user ? user.role : null}
               </p>
             </div>
           </div>
@@ -51,7 +52,7 @@ export const Navbar = () => {
           <div className="flex items-center gap-2 cursor-pointer">
             <User2 className="text-blue-500" />
             <Button variant="link" className="cursor-pointer">
-              View Profile
+              <Link to="/profile">View Profile</Link>
             </Button>
           </div>
 

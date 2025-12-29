@@ -34,7 +34,6 @@ export default function Signup() {
     setInput({ ...input, file: e.target.files?.[0] });
     const file = e.target.files[0];
     if (!file) return;
-
     setPreview(URL.createObjectURL(file));
   };
 

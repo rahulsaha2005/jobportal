@@ -5,6 +5,7 @@ import Home from "./components/Home";
 import MainLayout from "./components/MainLayout.jsx";
 import Jobs from "./components/Jobs.jsx";
 import Browse from "./components/Browse.jsx";
+import Profile from "./components/profile.jsx";
 
 function App() {
   const appRouter = createBrowserRouter([
@@ -17,6 +18,7 @@ function App() {
         { path: "/signup", element: <Signup /> },
         { path: "/Jobs", element: <Jobs /> },
         { path: "/Browse", element: <Browse /> },
+        { path: "/profile", element: <Profile /> },
       ],
     },
   ]);
