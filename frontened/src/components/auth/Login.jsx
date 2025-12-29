@@ -7,11 +7,10 @@ import { toast } from "sonner";
 import { USER_API_END_POINT } from "../../utils/constant";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading } from "../../redux/authSlice";
-import store from "../../redux/store";
+import { setLoading, setAuthUser } from "../../redux/authSlice";
 import { Loader2 } from "lucide-react";
 
-export default function login({ setUser }) {
+export default function login() {
   const [input, setInput] = useState({
     email: "",
     password: "",
@@ -46,7 +45,8 @@ export default function login({ setUser }) {
     }
 
     if (res.data.success) {
-      setUser(true);
+      dispatch(setAuthUser(res.data.user));
+      console.log(res.data.user);
       navigate("/");
       console.log(input);
       toast.success(res.data.message);

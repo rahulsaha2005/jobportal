@@ -1,14 +1,25 @@
-import React from 'react'
-import { connect } from 'react-redux'
+import React from "react";
+import { connect } from "react-redux";
+import Job from "./Job.jsx";
+const RandomJob = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-export const Browse = (props) => {
+const Browse = () => {
   return (
-    <div>Browse</div>
-  )
-}
-
-const mapStateToProps = (state) => ({})
-
-const mapDispatchToProps = {}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Browse)
+    <div className="max-w-6xl  mx-auto my-5">
+      <h1 className="font-bold mb-4 text-xl">
+        Search Bar ({RandomJob.length})
+      </h1>
+      <div
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3
+                gap-5 md:gap-10
+                mx-auto md:mx-0
+                w-full max-w-[375px] md:max-w-6xl"
+      >
+        {RandomJob.map((value, idx) => (
+          <Job key={idx} />
+        ))}
+      </div>
+    </div>
+  );
+};
+export default Browse;

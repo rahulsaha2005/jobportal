@@ -8,11 +8,10 @@ import { USER_API_END_POINT } from "../../utils/constant";
 import { toast } from "sonner";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import store from "../../redux/store";
 import { setLoading } from "../../redux/authSlice";
 import { Loader2 } from "lucide-react";
 
-export default function Signup({ setUser }) {
+export default function Signup() {
   const [input, setInput] = useState({
     fullname: "",
     email: "",
@@ -25,7 +24,7 @@ export default function Signup({ setUser }) {
   const [open, setOpen] = useState(false);
   const naviagte = useNavigate();
   const dispatch = useDispatch();
-  const { loading } = useSelector((store) => store.auth);
+  const { loading } = useSelector((state) => state.auth);
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -72,7 +71,7 @@ export default function Signup({ setUser }) {
   }, [preview]);
 
   return (
-    <div >
+    <div>
       <div className=" relative bg-linear-to-r from-purple-600 to-blue-500 min-h-screen w-full overflow-hidden flex items-center justify-center px-4">
         {/* Decorative circles */}
         <div className="absolute -top-32 -left-32 w-64 h-64 bg-purple-400 rounded-full opacity-30 animate-pulse"></div>

@@ -3,10 +3,10 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { Navbar } from "./shared/navbar.jsx";
 
-function MainLayout({ User, setUser }) {
+function MainLayout() {
   return (
     <div>
-      <Navbar User={User} setUser={setUser} />
+      <Navbar />
       <Outlet /> {/* This renders the current route page */}
     </div>
   );

@@ -7,7 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 export default function Job() {
   return (
-    <div className="p-5 rounded-md shadow-xl bg-amber-300 border border-gray-200">
+    <div className="p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 shadow-blue-500/30 bg-blue-200 border-2 border-blue-600 ">
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">2 days ago</p>
         <Button variant="outline" className="rounded-full" size="icon">
@@ -33,8 +33,7 @@ export default function Job() {
           perspiciatis nulla soluta aut laboriosam minima.
         </p>
       </div>
-  <div className="flex flex-col md:flex-row items-center gap-2 mt-4">
-
+      <div className="md:flex flex-col md:flex-row md:items-center gap-2 mt-4">
         <Badge
           className="bg-white text-blue-700  font-semibold  mr-1"
           variant="ghost"
@@ -55,8 +54,25 @@ export default function Job() {
         </Badge>
       </div>
       <div className="flex items-center gap-4 mt-4">
-        <Button variant="Outline" className="border">Details</Button>
-        <Button className="bg-[#7209b7]">Save for Later</Button>
+        <Button
+          variant="Outline"
+          className="border bg-red-600 text-white rounded-lg px-4 py-2 shadow-md
+               hover:bg-blue-700
+               active:bg-red-800
+               focus:outline-none focus:ring-2 focus:ring-red-400
+               transition-colors duration-200 ease-in-out"
+        >
+          Details
+        </Button>
+        <Button
+          className="border bg-purple-600 text-white rounded-lg px-4 py-2 shadow-md 
+               hover:bg-blue-700 
+               active:bg-blue-800 
+               focus:outline-none focus:ring-2 focus:ring-purple-400 
+               transition-colors duration-200 ease-in-out"
+        >
+          Save for Later
+        </Button>
       </div>
     </div>
   );

@@ -4,12 +4,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover.jsx";
 import { Avatar, AvatarImage } from "../ui/avatar.jsx";
 import { LogOut, User2, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-export const Navbar = ({ User, setUser }) => {
-  // if User logged in->show User icon
+import { useSelector } from "react-redux";
+export const Navbar = () => {
+  // if user logged in->show user icon
   // else show login logout button
   // using md:hidder for showing mobile type version
   // using hidden md:flex for showing desktop version
   // it show hamburgericon for menu open and X for crossing that icon and hidding
+  const { user } = useSelector((state) => state.auth);
   //menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -36,9 +38,9 @@ export const Navbar = ({ User, setUser }) => {
 
             {/* data  */}
             <div>
-              <h4 className="font-medium">Rahul Saha</h4>
+              <h4 className="font-medium">{user.fullname}</h4>
               <p className="text-xs text-muted-foreground">
-                <span className="font-medium">Status - </span> Student
+                <span className="font-medium">Status - </span> {user.role}
               </p>
             </div>
           </div>
@@ -107,7 +109,7 @@ export const Navbar = ({ User, setUser }) => {
             </li>
           </ul>
 
-          {!User ? LoginSignup : popContent}
+          {!user ? LoginSignup : popContent}
         </div>
 
         {/* Mobile Menu Button */}
@@ -135,8 +137,8 @@ export const Navbar = ({ User, setUser }) => {
               <Link to="/Browse">Browse</Link>
             </li>
           </ul>
-          {!User && LoginSignup}
-          {User && popContent}
+          {!user && LoginSignup}
+          {user && popContent}
         </div>
       )}
     </nav>
