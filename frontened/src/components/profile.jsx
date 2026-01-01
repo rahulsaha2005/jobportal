@@ -1,34 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Contact2, Mail, Pen } from "lucide-react";
 import { Label } from "@radix-ui/react-label";
 import { Badge } from "./ui/badge";
 import AppliedJobTable from "./AppliedJobTable";
+import UpdateProfileDialog from "./UpdateProfileDialog";
+import { useSelector } from "react-redux";
 
 export default function Profile() {
-  const isResume = true;
+  const [open, setOpen] = useState(false);
+  const { user } = useSelector((store) => store.auth);
+
+  const resumeUrl = user?.profile?.resume || null;
 
   return (
     <div>
       <div className="mx-3 sm:mx-auto max-w-5xl my-4 rounded-2xl border bg-white shadow-sm dark:bg-zinc-900 p-4 sm:p-6">
-        {/* ================= HEADER ================= */}
+        {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           {/* Profile Info */}
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left">
             <Avatar className="w-24 h-24 sm:w-28 sm:h-28 ring-2 ring-gray-200 dark:ring-zinc-700">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>FN</AvatarFallback>
+              <AvatarImage
+                src={user?.profile?.avatar || "https://github.com/shadcn.png"}
+              />
+              <AvatarFallback>
+                {user?.fullname
+                  ?.split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase() || "NA"}
+              </AvatarFallback>
             </Avatar>
 
             <div>
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
-                Full Name
+                {user?.fullname || "NA"}
               </h2>
 
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 max-w-md leading-relaxed">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Voluptatem, obcaecati saepe harum asperiores nulla aspernatur.
+                {user?.profile?.bio || "NA"}
               </p>
             </div>
           </div>
@@ -38,29 +50,30 @@ export default function Profile() {
             variant="outline"
             size="icon"
             className="self-center sm:self-start"
+            onClick={() => setOpen(true)}
           >
             <Pen className="w-4 h-4" />
           </Button>
         </div>
 
-        {/* ================= DIVIDER ================= */}
+        {/* Divider */}
         <div className="my-5 h-px bg-gray-200 dark:bg-zinc-700" />
 
-        {/* ================= DETAILS ================= */}
+        {/* Details */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {/* Contact Info */}
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
               <Mail className="w-4 h-4 text-muted-foreground" />
               <span className="break-all text-gray-700 dark:text-gray-300">
-                jived1224@gmail.com
+                {user?.email || "NA"}
               </span>
             </div>
 
             <div className="flex items-center gap-3 text-sm">
               <Contact2 className="w-4 h-4 text-muted-foreground" />
               <span className="text-gray-700 dark:text-gray-300">
-                9923103037
+                {user?.phoneNumber || "NA"}
               </span>
             </div>
           </div>
@@ -72,15 +85,19 @@ export default function Profile() {
             </h3>
 
             <div className="flex flex-wrap gap-2">
-              {[1, 2, 3, 4].map((item, idx) => (
-                <Badge
-                  key={idx}
-                  variant="secondary"
-                  className="px-3 py-1 text-xs sm:text-sm rounded-md"
-                >
-                  Skill {item}
-                </Badge>
-              ))}
+              {user?.profile?.skills?.length > 0 ? (
+                user.profile.skills.map((item, idx) => (
+                  <Badge
+                    key={idx}
+                    variant="secondary"
+                    className="px-3 py-1 text-xs sm:text-sm rounded-md"
+                  >
+                    {item}
+                  </Badge>
+                ))
+              ) : (
+                <span>NA</span>
+              )}
             </div>
           </div>
 
@@ -90,10 +107,11 @@ export default function Profile() {
               Resume
             </Label>
 
-            {isResume ? (
+            {resumeUrl ? (
               <a
-                href="https://www.google.com"
+                href={resumeUrl}
                 target="_blank"
+                rel="noreferrer"
                 className="inline-block text-sm text-blue-600 hover:underline m-2"
               >
                 View Resume (PDF)
@@ -104,11 +122,15 @@ export default function Profile() {
           </div>
         </div>
       </div>
+
+      {/* ================= APPLIED JOBS ================= */}
       <div className="mx-3 sm:mx-auto max-w-5xl my-4 rounded-2xl border bg-white shadow-sm dark:bg-zinc-900 p-4 sm:p-6">
-        <h1>Applied Jobs</h1>
+        <h1 className="text-lg font-semibold mb-3">Applied Jobs</h1>
         <AppliedJobTable />
       </div>
-      
+
+      {/* Update Profile Dialog */}
+      <UpdateProfileDialog open={open} setOpen={setOpen} />
     </div>
   );
 }
