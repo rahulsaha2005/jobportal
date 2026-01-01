@@ -8,7 +8,7 @@ import { USER_API_END_POINT } from "../../utils/constant";
 import { toast } from "sonner";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading } from "../../redux/authSlice";
+import { setLoading, setAuthUser } from "../../redux/authSlice"; // <-- make sure this is correct
 import { Loader2 } from "lucide-react";
 
 export default function Signup() {
@@ -17,12 +17,13 @@ export default function Signup() {
     email: "",
     phoneNumber: "",
     password: "",
-    role: "",
+    role: "student", // default role
     file: null,
   });
   const [preview, setPreview] = useState(null);
   const [open, setOpen] = useState(false);
-  const naviagte = useNavigate();
+
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
 
@@ -31,38 +32,55 @@ export default function Signup() {
   };
 
   const changeFileHandler = (e) => {
-    setInput({ ...input, file: e.target.files?.[0] });
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
+    setInput({ ...input, file });
     setPreview(URL.createObjectURL(file));
   };
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    let res;
+
+    // Simple front-end validation
+    if (
+      !input.fullname ||
+      !input.email ||
+      !input.phoneNumber ||
+      !input.password ||
+      !input.role
+    ) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("fullname", input.fullname);
+    formData.append("email", input.email);
+    formData.append("phoneNumber", input.phoneNumber);
+    formData.append("password", input.password);
+    formData.append("role", input.role);
+    if (input.file) formData.append("file", input.file);
+
     try {
       dispatch(setLoading(true));
-      res = await axios.post(`${USER_API_END_POINT}/register`, input, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const res = await axios.post(`${USER_API_END_POINT}/register`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
+
+      if (res.data.success) {
+        dispatch(setAuthUser(res.data.user));
+        toast.success(res.data.message);
+        navigate("/login"); // navigate after success
+      }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error(error.response?.data?.message || "Something went wrong");
-      return;
     } finally {
       dispatch(setLoading(false));
     }
-
-    if (res.data.success) {
-      naviagte("/login");
-      console.log(input);
-      toast.success(res.data.message);
-    }
-    // After successful signup, navigate to login or dashboard
   };
+
   useEffect(() => {
     return () => {
       if (preview) URL.revokeObjectURL(preview);
@@ -70,145 +88,141 @@ export default function Signup() {
   }, [preview]);
 
   return (
-    <div>
-      <div className=" relative bg-linear-to-r from-purple-600 to-blue-500 min-h-screen w-full overflow-hidden flex items-center justify-center px-4">
-        {/* Decorative circles */}
-        <div className="absolute -top-32 -left-32 w-64 h-64 bg-purple-400 rounded-full opacity-30 animate-pulse"></div>
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-400 rounded-full opacity-20 animate-pulse"></div>
+    <div className="relative bg-linear-to-r from-purple-600 to-blue-500 min-h-screen w-full overflow-hidden flex items-center justify-center px-4">
+      <div className="absolute -top-32 -left-32 w-64 h-64 bg-purple-400 rounded-full opacity-30 animate-pulse"></div>
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-blue-400 rounded-full opacity-20 animate-pulse"></div>
 
-        <form
-          onSubmit={submitHandler}
-          className="bg-white m-4 text-black w-full max-w-md md:max-w-lg border border-gray-200 rounded-md p-6 z-10"
+      <form
+        onSubmit={submitHandler}
+        className="bg-white m-4 text-black w-full max-w-md md:max-w-lg border border-gray-200 rounded-md p-6 z-10"
+      >
+        <h1 className="font-bold text-xl mb-5 text-center">Sign Up</h1>
+
+        <div className="my-2">
+          <Label>Full Name</Label>
+          <Input
+            type="text"
+            name="fullname"
+            value={input.fullname}
+            onChange={changeEventHandler}
+            placeholder="Enter Your Name"
+          />
+        </div>
+
+        <div className="my-2">
+          <Label>Email</Label>
+          <Input
+            type="email"
+            name="email"
+            value={input.email}
+            onChange={changeEventHandler}
+            placeholder="Enter Your Email"
+          />
+        </div>
+
+        <div className="my-2">
+          <Label>Phone Number</Label>
+          <Input
+            type="text"
+            name="phoneNumber"
+            value={input.phoneNumber}
+            onChange={changeEventHandler}
+            placeholder="Enter Your Phone Number"
+          />
+        </div>
+
+        <div className="my-2">
+          <Label>Password</Label>
+          <Input
+            type="password"
+            name="password"
+            value={input.password}
+            onChange={changeEventHandler}
+            placeholder="Enter Your Password"
+          />
+        </div>
+
+        <Label>Profession</Label>
+        <RadioGroup
+          className="flex items-center gap-4 my-5"
+          defaultValue={input.role}
         >
-          <h1 className="font-bold text-xl mb-5 text-center">Sign Up</h1>
-          <div className="my-2">
-            <Label>Full Name</Label>
+          <div className="flex items-center space-x-2">
             <Input
-              type="text"
-              value={input.fullname}
-              name="fullname"
+              type="radio"
+              id="recruiter"
+              name="role"
+              value="recruiter"
+              checked={input.role === "recruiter"}
               onChange={changeEventHandler}
-              placeholder="Enter Your Name"
             />
+            <Label htmlFor="recruiter">Recruiter</Label>
           </div>
-          <div className="my-2">
-            <Label>Email</Label>
+          <div className="flex items-center space-x-2">
             <Input
-              type="text"
-              value={input.email}
-              name="email"
+              type="radio"
+              id="student"
+              name="role"
+              value="student"
+              checked={input.role === "student"}
               onChange={changeEventHandler}
-              placeholder="Enter Your Email"
             />
+            <Label htmlFor="student">Student</Label>
           </div>
-          <div className="my-2">
-            <Label>Phone Number</Label>
-            <Input
-              type="text"
-              value={input.phoneNumber}
-              name="phoneNumber"
-              onChange={changeEventHandler}
-              placeholder="Enter Your Phone Number"
+        </RadioGroup>
+
+        <div className="flex flex-col gap-2">
+          <Label>Profile</Label>
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={changeFileHandler}
+            className="cursor-pointer"
+          />
+
+          {preview && (
+            <img
+              src={preview}
+              alt="preview"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpen(true);
+              }}
+              className="w-16 h-16 object-cover cursor-pointer border rounded"
             />
-          </div>
-          <div className="my-2">
-            <Label>Password</Label>
-            <Input
-              type="password"
-              value={input.password}
-              name="password"
-              onChange={changeEventHandler}
-              placeholder="Enter Your Password"
-            />
-          </div>
-          <Label>Profession</Label>
-          <div>
-            <RadioGroup
-              className="flex items-center gap-4 my-5"
-              defaultValue="Recruiter"
+          )}
+
+          {open && (
+            <div
+              className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+              onClick={() => setOpen(false)}
             >
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="radio"
-                  id="recruiter"
-                  name="role"
-                  value="recruiter"
-                  checked={input.role === "recruiter"}
-                  onChange={changeEventHandler}
-                  className="cursor-pointer"
-                />
-                <Label htmlFor="recruiter">Recruiter</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="radio"
-                  id="student"
-                  name="role"
-                  value="student"
-                  checked={input.role === "student"}
-                  onChange={changeEventHandler}
-                  className="cursor-pointer"
-                />
-                <Label htmlFor="student">Student</Label>
-              </div>
-            </RadioGroup>
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label>Profile</Label>
-
-            <Input
-              onChange={changeFileHandler}
-              accept="image/*"
-              type="file"
-              className="cursor-pointer"
-            />
-
-            {/* Small preview */}
-            {preview && (
               <img
                 src={preview}
-                alt="preview"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setOpen(true);
-                }}
-                className="w-16 h-16 object-cover cursor-pointer border rounded"
+                alt="full"
+                className="max-w-[90%] max-h-[90%]"
+                onClick={(e) => e.stopPropagation()}
               />
-            )}
-
-            {/* Modal */}
-            {open && (
-              <div
-                className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-                onClick={() => setOpen(false)}
-              >
-                <img
-                  src={preview}
-                  alt="full"
-                  className="max-w-[90%] max-h-[90%]"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </div>
-            )}
-          </div>
-          {loading ? (
-            <Button className="w-full my-4 bg-[#4f39f6]">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please Wait
-            </Button>
-          ) : (
-            <Button type="submit" className="w-full my-4 bg-[#4f39f6]">
-              Sign Up
-            </Button>
+            </div>
           )}
-          <p className="text-xs text-gray-500 text-center">
-            Already have an account?{" "}
-            <Link to="/login" replace className="text-red-600 text-sm">
-              Login
-            </Link>
-          </p>
-        </form>
-      </div>
+        </div>
+
+        <Button type="submit" className="w-full my-4 bg-[#4f39f6]">
+          {loading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            "Sign Up"
+          )}
+        </Button>
+
+        <p className="text-xs text-gray-500 text-center">
+          Already have an account?{" "}
+          <Link to="/login" replace className="text-red-600 text-sm">
+            Login
+          </Link>
+        </p>
+      </form>
     </div>
   );
 }

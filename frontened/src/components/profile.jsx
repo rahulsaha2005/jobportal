@@ -23,7 +23,7 @@ export default function Profile() {
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left">
             <Avatar className="w-24 h-24 sm:w-28 sm:h-28 ring-2 ring-gray-200 dark:ring-zinc-700">
               <AvatarImage
-                src={user?.profile?.avatar || "https://github.com/shadcn.png"}
+                src={user?.profile?.profilePhoto || "https://github.com/shadcn.png"}
               />
               <AvatarFallback>
                 {user?.fullname

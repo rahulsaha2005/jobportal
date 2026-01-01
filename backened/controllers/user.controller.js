@@ -4,194 +4,170 @@ import jwt from "jsonwebtoken";
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------
 export const register = async (req, res) => {
   try {
-    // taking name from front page
-    // then checking if something is missing or not
     const { fullname, email, phoneNumber, password, role } = req.body;
+
     if (!fullname || !email || !phoneNumber || !password || !role) {
-      return res.status(400).json({
-        message: "Something is missing",
-        success: false,
-      });
+      return res.status(400).json({ message: "Something is missing", success: false });
     }
-    // now we know email is unique for every user
-    // so finding any user exist with same email
-    // if yes return user already exist
-    const user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({
-        message: "User Already Exist",
-        success: false,
-      });
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists", success: false });
     }
-    // now hashing password with bcrypt js of length 10
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    // user make account with given details
-    await User.create({
+
+    let user = await User.create({
       fullname,
       email,
       phoneNumber,
       password: hashedPassword,
       role,
+      profile: {} // initialize empty profile object
     });
-    // account created successfully in database
+
+    // Upload profile photo if file exists
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+      if (cloudResponse) {
+        user.profile.profilePhoto = cloudResponse.secure_url;
+        await user.save();
+      }
+    }
+
     return res.status(201).json({
-      message: "Account Created SuccessFully",
+      message: "Account created successfully",
       success: true,
+      user: {
+        _id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+        profile: user.profile,
+      },
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error", success: false });
   }
 };
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+// --------------------------------------------------------------------------------------------------------------------------------
 export const login = async (req, res) => {
   try {
-    // then take email,password and role from login page
-    // now checking if it empty or not
     const { email, password, role } = req.body;
+
     if (!email || !password || !role) {
-      return res.status(400).json({
-        message: "Something is Missing",
-        success: false,
-      });
+      return res.status(400).json({ message: "Something is missing", success: false });
     }
-    // taking out data from database for checking if it exists or not
-    let user = await User.findOne({ email });
-    // checking user exist or not
+
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({
-        message: "Incorrect email or password",
-        success: false,
-      });
+      return res.status(400).json({ message: "Incorrect email or password", success: false });
     }
-    // matching password using bycrpt js
+
     const isPasswordMatch = await bcrypt.compare(password, user.password);
-    // sending message error for wrng password
     if (!isPasswordMatch) {
-      return res.status(400).json({
-        message: "Password is Wrong",
-        success: false,
-      });
+      return res.status(400).json({ message: "Password is wrong", success: false });
     }
-    //  checking user exist have same role with it login
+
     if (role !== user.role) {
-      return res.status(400).json({
-        message: "User role is incorrect",
-        success: false,
-      });
+      return res.status(400).json({ message: "User role is incorrect", success: false });
     }
 
-    const tokenData = {
-      userId: user._id,
-    };
-    const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
-      expiresIn: "1d",
-    });
-
-    // storing data in user and sending to frontended
-
-    user = {
-      _id: user._id,
-      fullname: user.fullname,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      role: user.role,
-      profile: user.profile,
-    };
+    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: "1d" });
 
     return res
       .status(200)
       .cookie("token", token, {
-        maxAge: 1 * 24 * 60 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
         httpOnly: true,
         secure: false,
         sameSite: "strict",
       })
       .json({
-        message: `welcome back ${user.fullname}`,
-        user,
+        message: `Welcome back ${user.fullname}`,
         success: true,
+        user: {
+          _id: user._id,
+          fullname: user.fullname,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          role: user.role,
+          profile: user.profile,
+        },
       });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error", success: false });
   }
 };
-// ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-export const logout = async (req, res) => {
-  // logout code
-  try {
-    return res.status(200).cookie("token", "", { maxAge: 0 }).json({
-      message: "Logged out Successfully",
-      success: true,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+// --------------------------------------------------------------------------------------------------------------------------------
+export const logout = async (req, res) => {
+  try {
+    return res
+      .status(200)
+      .cookie("token", "", { maxAge: 0 })
+      .json({ message: "Logged out successfully", success: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error", success: false });
+  }
+};
+
+// --------------------------------------------------------------------------------------------------------------------------------
 export const updateProfile = async (req, res) => {
   try {
-    // update profile data with existing data
     const { fullname, email, phoneNumber, bio, skills } = req.body;
-    //  ? not known till what is it
-    const file = req.file;
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+    const userId = req.id; // from middleware auth
 
-    // split skills in array format
-    let skillsArray;
-    if (skills) {
-      skillsArray = skills.split(",");
-    }
-
-    // middle ware authencation
-    const userId = req.id;
-
-    // finding user by id in database
-    let user = await User.findById(userId);
-
-    // checking user exist or not
+    const user = await User.findById(userId);
     if (!user) {
-      return res.status(400).json({
-        message: "user not found",
-        success: false,
-      });
+      return res.status(404).json({ message: "User not found", success: false });
     }
-    // updating data
+
     if (fullname) user.fullname = fullname;
     if (email) user.email = email;
     if (phoneNumber) user.phoneNumber = phoneNumber;
     if (bio) user.profile.bio = bio;
-    if (skills) user.profile.skills = skillsArray;
-    // resume comes later here...
-    if (cloudResponse) {
-      user.profile.resume = cloudResponse.secure_url; // save the cloudinary url
-      user.profile.resumeOriginalName = file.originalname; // Save the original file name
+    if (skills) user.profile.skills = skills.split(",").map(s => s.trim());
+
+    if (req.file) {
+      const fileUri = getDataUri(req.file);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+
+      if (cloudResponse) {
+        if (req.file.mimetype.includes("pdf")) {
+          user.profile.resume = cloudResponse.secure_url;
+          user.profile.resumeOriginalName = req.file.originalname;
+        } else if (req.file.mimetype.startsWith("image/")) {
+          user.profile.profilePhoto = cloudResponse.secure_url;
+        }
+      }
     }
 
-    // saving it
     await user.save();
 
-    // passing that data to frontend
-    user = {
-      _id: user._id,
-      fullname: user.fullname,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      role: user.role,
-      profile: user.profile,
-    };
-
     return res.status(200).json({
-      message: "Profile updated successfully.",
-      user,
+      message: "Profile updated successfully",
       success: true,
+      user: {
+        _id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        role: user.role,
+        profile: user.profile,
+      },
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error", success: false });
   }
 };

@@ -8,7 +8,7 @@ import {
   DialogDescription,
 } from "./ui/dialog.jsx";
 import { Input } from "./ui/input.jsx";
-import { Textarea } from "./ui/textarea.jsx"; // multiline bio
+import { Textarea } from "./ui/textarea.jsx";
 import { Label } from "@radix-ui/react-label";
 import { Loader2 } from "lucide-react";
 import { Button } from "./ui/button.jsx";
@@ -23,7 +23,6 @@ export default function UpdateProfileDialog({ open, setOpen }) {
   const { user } = useSelector((store) => store.auth);
 
   const [loading, setLoading] = useState(false);
-
   const [input, setInput] = useState({
     fullname: "",
     email: "",
@@ -33,7 +32,7 @@ export default function UpdateProfileDialog({ open, setOpen }) {
     file: null,
   });
 
-  // Sync form state with latest user whenever dialog opens or user changes
+  // Sync form state with latest user when dialog opens
   useEffect(() => {
     if (user) {
       setInput({
@@ -47,32 +46,27 @@ export default function UpdateProfileDialog({ open, setOpen }) {
     }
   }, [user, open]);
 
-  // Handle input change
   const changeEventHandler = (e) => {
     const { name, value } = e.target;
     setInput((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle file change
   const fileChangeHandler = (e) => {
     const file = e.target.files?.[0];
+    if (!file) return;
 
-    // Optional: validate file type and size (2MB max)
-    if (file) {
-      if (file.type !== "application/pdf") {
-        toast.error("Resume must be a PDF file");
-        return;
-      }
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error("Resume must be under 2MB");
-        return;
-      }
+    if (file.type !== "application/pdf") {
+      toast.error("Resume must be a PDF file");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Resume must be under 2MB");
+      return;
     }
 
     setInput((prev) => ({ ...prev, file }));
   };
 
-  // Form submit handler
   const submitHandler = async (e) => {
     e.preventDefault();
 
@@ -82,23 +76,14 @@ export default function UpdateProfileDialog({ open, setOpen }) {
     formData.append("phoneNumber", input.phoneNumber);
     formData.append("bio", input.bio);
     formData.append("skills", input.skills);
-
-    if (input.file) formData.append("file", input.file);
+    if (input.file) formData.append("file", input.file); // backend expects "file"
 
     try {
       setLoading(true);
-      // Print all FormData entries
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
-      const res = await axios.post(
-        `${USER_API_END_POINT}/profile/update`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true,
-        }
-      );
+      const res = await axios.post(`${USER_API_END_POINT}/profile/update`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
 
       if (res.data.success) {
         dispatch(setAuthUser(res.data.user));
@@ -124,95 +109,40 @@ export default function UpdateProfileDialog({ open, setOpen }) {
 
         <form onSubmit={submitHandler}>
           <div className="grid gap-4 py-4">
-            {/* Full Name */}
+            {/* Name */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="fullname" className="text-right">
-                Name
-              </Label>
-              <Input
-                id="fullname"
-                name="fullname"
-                type="text"
-                value={input.fullname}
-                onChange={changeEventHandler}
-                className="col-span-3"
-              />
+              <Label htmlFor="fullname" className="text-right">Name</Label>
+              <Input id="fullname" name="fullname" type="text" value={input.fullname} onChange={changeEventHandler} className="col-span-3" />
             </div>
 
             {/* Email */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="email" className="text-right">
-                Email
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={input.email}
-                onChange={changeEventHandler}
-                className="col-span-3"
-              />
+              <Label htmlFor="email" className="text-right">Email</Label>
+              <Input id="email" name="email" type="email" value={input.email} onChange={changeEventHandler} className="col-span-3" />
             </div>
 
             {/* Phone */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="phoneNumber" className="text-right">
-                Number
-              </Label>
-              <Input
-                id="phoneNumber"
-                name="phoneNumber"
-                type="tel"
-                value={input.phoneNumber}
-                onChange={changeEventHandler}
-                className="col-span-3"
-              />
+              <Label htmlFor="phoneNumber" className="text-right">Phone</Label>
+              <Input id="phoneNumber" name="phoneNumber" type="tel" value={input.phoneNumber} onChange={changeEventHandler} className="col-span-3" />
             </div>
 
             {/* Bio */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="bio" className="text-right">
-                Bio
-              </Label>
-              <Textarea
-                id="bio"
-                name="bio"
-                value={input.bio}
-                onChange={changeEventHandler}
-                className="col-span-3 resize-none"
-                rows={3}
-              />
+              <Label htmlFor="bio" className="text-right">Bio</Label>
+              <Textarea id="bio" name="bio" value={input.bio} onChange={changeEventHandler} className="col-span-3 resize-none" rows={3} />
             </div>
 
             {/* Skills */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="skills" className="text-right">
-                Skills
-              </Label>
-              <Input
-                id="skills"
-                name="skills"
-                type="text"
-                placeholder="React, Node, MongoDB"
-                value={input.skills}
-                onChange={changeEventHandler}
-                className="col-span-3"
-              />
+              <Label htmlFor="skills" className="text-right">Skills</Label>
+              <Input id="skills" name="skills" type="text" placeholder="React, Node, MongoDB" value={input.skills} onChange={changeEventHandler} className="col-span-3" />
             </div>
 
             {/* Resume */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="file" className="text-right">
-                Resume
-              </Label>
-              <Input
-                id="file"
-                name="file"
-                type="file"
-                accept="application/pdf"
-                onChange={fileChangeHandler}
-                className="col-span-3"
-              />
+              <Label htmlFor="file" className="text-right">Resume</Label>
+              <Input id="file" name="file" type="file" accept="application/pdf" onChange={fileChangeHandler} className="col-span-3" />
             </div>
           </div>
 
@@ -228,6 +158,7 @@ export default function UpdateProfileDialog({ open, setOpen }) {
               )}
             </Button>
           </DialogFooter>
+
           <DialogDescription>
             Update your profile information including bio, skills, and resume.
           </DialogDescription>

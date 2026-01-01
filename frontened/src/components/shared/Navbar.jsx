@@ -23,7 +23,10 @@ export const Navbar = () => {
      */}
       <PopoverTrigger asChild>
         <Avatar className="cursor-pointer">
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarImage
+            src={user?.profile?.profilePhoto || "https://github.com/shadcn.png"}
+            alt="@shadcn"
+          />
         </Avatar>
       </PopoverTrigger>
 
@@ -33,7 +36,7 @@ export const Navbar = () => {
           <div className="flex items-center gap-4">
             {/* image */}
             <Avatar className="cursor-pointer">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+              <AvatarImage src={user?.profile.profilePhoto} alt="@shadcn" />
             </Avatar>
 
             {/* data  */}
