@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 export default function Profile() {
   const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
+  console.log(user);
 
   const resumeUrl = user?.profile?.resume || null;
 
@@ -23,7 +24,9 @@ export default function Profile() {
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left">
             <Avatar className="w-24 h-24 sm:w-28 sm:h-28 ring-2 ring-gray-200 dark:ring-zinc-700">
               <AvatarImage
-                src={user?.profile?.profilePhoto || "https://github.com/shadcn.png"}
+                src={
+                  user?.profile?.profilePhoto || "https://github.com/shadcn.png"
+                }
               />
               <AvatarFallback>
                 {user?.fullname
@@ -116,6 +119,7 @@ export default function Profile() {
               >
                 View Resume (PDF)
               </a>
+              
             ) : (
               <span className="text-sm text-gray-500">Not Available</span>
             )}

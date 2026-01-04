@@ -10,12 +10,16 @@ export const register = async (req, res) => {
     const { fullname, email, phoneNumber, password, role } = req.body;
 
     if (!fullname || !email || !phoneNumber || !password || !role) {
-      return res.status(400).json({ message: "Something is missing", success: false });
+      return res
+        .status(400)
+        .json({ message: "Something is missing", success: false });
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists", success: false });
+      return res
+        .status(400)
+        .json({ message: "User already exists", success: false });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -26,7 +30,13 @@ export const register = async (req, res) => {
       phoneNumber,
       password: hashedPassword,
       role,
-      profile: {} // initialize empty profile object
+      profile: {
+        bio: "",
+        skills: [],
+        resume: "",
+        resumeOriginalName: "",
+        profilePhoto: "",
+      },
     });
 
     // Upload profile photo if file exists
@@ -53,7 +63,9 @@ export const register = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal server error", success: false });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", success: false });
   }
 };
 
@@ -63,24 +75,34 @@ export const login = async (req, res) => {
     const { email, password, role } = req.body;
 
     if (!email || !password || !role) {
-      return res.status(400).json({ message: "Something is missing", success: false });
+      return res
+        .status(400)
+        .json({ message: "Something is missing", success: false });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "Incorrect email or password", success: false });
+      return res
+        .status(400)
+        .json({ message: "Incorrect email or password", success: false });
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      return res.status(400).json({ message: "Password is wrong", success: false });
+      return res
+        .status(400)
+        .json({ message: "Password is wrong", success: false });
     }
 
     if (role !== user.role) {
-      return res.status(400).json({ message: "User role is incorrect", success: false });
+      return res
+        .status(400)
+        .json({ message: "User role is incorrect", success: false });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, { expiresIn: "1d" });
+    const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
+      expiresIn: "1d",
+    });
 
     return res
       .status(200)
@@ -104,7 +126,9 @@ export const login = async (req, res) => {
       });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal server error", success: false });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", success: false });
   }
 };
 
@@ -117,7 +141,9 @@ export const logout = async (req, res) => {
       .json({ message: "Logged out successfully", success: true });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal server error", success: false });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", success: false });
   }
 };
 
@@ -125,30 +151,44 @@ export const logout = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { fullname, email, phoneNumber, bio, skills } = req.body;
-    const userId = req.id; // from middleware auth
+    const userId = req.id; // from auth middleware
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: "User not found", success: false });
+      return res
+        .status(404)
+        .json({ message: "User not found", success: false });
     }
 
+    // Update basic fields
     if (fullname) user.fullname = fullname;
     if (email) user.email = email;
     if (phoneNumber) user.phoneNumber = phoneNumber;
     if (bio) user.profile.bio = bio;
-    if (skills) user.profile.skills = skills.split(",").map(s => s.trim());
-
+    if (skills) user.profile.skills = skills.split(",").map((s) => s.trim());
+    console.log(req.file);
     if (req.file) {
       const fileUri = getDataUri(req.file);
-      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
 
-      if (cloudResponse) {
-        if (req.file.mimetype.includes("pdf")) {
+      try {
+        const cloudResponse = await cloudinary.uploader.upload(
+          fileUri.content,
+          {
+            resource_type: "raw", // important for PDFs, DOCX, etc.
+          }
+        );
+cloudinary.v2.uploader.upload("sample.pdf", 
+  function(error, result) {console.log(result, error); });
+        console.log(cloudResponse);
+        if (cloudResponse) {
+          // NOTE: If using async: true, the secure_url is generated immediately,
+          // but the transformation happens in the background.
+          console.log(cloudResponse);
           user.profile.resume = cloudResponse.secure_url;
           user.profile.resumeOriginalName = req.file.originalname;
-        } else if (req.file.mimetype.startsWith("image/")) {
-          user.profile.profilePhoto = cloudResponse.secure_url;
         }
+      } catch (error) {
+        console.error("Cloudinary Error:", error);
       }
     }
 
@@ -168,6 +208,8 @@ export const updateProfile = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal server error", success: false });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", success: false });
   }
 };

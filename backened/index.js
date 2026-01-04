@@ -8,8 +8,9 @@ import companyRoute from "./routes/company.routes.js";
 import jobRoute from "./routes/job.route.js";
 import applicationRoute from "./routes/application.routes.js";
 
-const app = express();
 dotenv.config({});
+
+const app = express();
 
 // middleware
 app.use(express.json());
@@ -21,14 +22,26 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
-const PORT = process.env.PORT || 3000;
 
+// routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
 app.use("/api/v1/application", applicationRoute);
 
-app.listen(PORT, () => {
-  connectDB();
-  console.log(`server running at port ${PORT}`);
-});
+// start server after DB connection
+const PORT = process.env.PORT || 3000;
+
+const startServer = async () => {
+  try {
+    await connectDB(); 
+    app.listen(PORT, () => {
+      console.log(`Server running at port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error.message);
+    process.exit(1); 
+  }
+};
+
+startServer();
