@@ -6,6 +6,7 @@ import MainLayout from "./components/MainLayout.jsx";
 import Jobs from "./components/Jobs.jsx";
 import Browse from "./components/Browse.jsx";
 import Profile from "./components/profile.jsx";
+import JobDescription from "./components/JobDescription.jsx";
 
 function App() {
   const appRouter = createBrowserRouter([
@@ -19,6 +20,7 @@ function App() {
         { path: "/Jobs", element: <Jobs /> },
         { path: "/Browse", element: <Browse /> },
         { path: "/profile", element: <Profile /> },
+        { path: "/description/:id", element: <JobDescription /> },
       ],
     },
   ]);

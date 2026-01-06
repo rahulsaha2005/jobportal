@@ -2,6 +2,7 @@ import React from "react";
 import { Button, buttonVariants } from "./ui/button";
 import { Bookmark } from "lucide-react";
 import { Badge, badgeVariants } from "./ui/badge.jsx";
+import { Link } from "react-router-dom";
 
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
@@ -62,7 +63,7 @@ export default function Job() {
                focus:outline-none focus:ring-2 focus:ring-red-400
                transition-colors duration-200 ease-in-out"
         >
-          Details
+          <Link to="/description/:id">Details</Link>
         </Button>
         <Button
           className="border bg-purple-600 text-white rounded-lg px-4 py-2 shadow-md 
