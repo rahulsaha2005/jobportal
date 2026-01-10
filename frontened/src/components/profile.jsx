@@ -7,14 +7,18 @@ import { Badge } from "./ui/badge";
 import AppliedJobTable from "./AppliedJobTable";
 import UpdateProfileDialog from "./UpdateProfileDialog";
 import { useSelector } from "react-redux";
+import { USER_API_END_POINT } from "../utils/constant";
 
 export default function Profile() {
   const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
   console.log(user);
+  function openResume(file) {
+    window.open(USER_API_END_POINT + `/resume?file=${file}`, "_blank");
+  }
 
   const resumeUrl = user?.profile?.resume || null;
-
+  console.log(resumeUrl);
   return (
     <div>
       <div className="mx-3 sm:mx-auto max-w-5xl my-4 rounded-2xl border bg-white shadow-sm dark:bg-zinc-900 p-4 sm:p-6">
@@ -115,11 +119,15 @@ export default function Profile() {
                 href={resumeUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-block text-sm text-blue-600 hover:underline m-2"
               >
                 View Resume (PDF)
               </a>
-              
+              // <button
+              //   onClick={() => openResume(resumeUrl)}
+              //   className="inline-block text-sm text-blue-600 hover:underline m-2"
+              // >
+              //   {user.profile.resumeOriginalName}
+              // </button>
             ) : (
               <span className="text-sm text-gray-500">Not Available</span>
             )}

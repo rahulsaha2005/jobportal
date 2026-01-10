@@ -177,14 +177,18 @@ export const updateProfile = async (req, res) => {
             resource_type: "raw", // important for PDFs, DOCX, etc.
           }
         );
-cloudinary.v2.uploader.upload("sample.pdf", 
-  function(error, result) {console.log(result, error); });
+        cloudinary.v2.uploader.upload("sample.pdf", function (error, result) {
+          console.log(result, error);
+        });
         console.log(cloudResponse);
         if (cloudResponse) {
           // NOTE: If using async: true, the secure_url is generated immediately,
           // but the transformation happens in the background.
           console.log(cloudResponse);
-          user.profile.resume = cloudResponse.secure_url;
+          user.profile.resume = cloudResponse.secure_url.replace(
+            "/upload/",
+            "/upload/fl_inline/"
+          );
           user.profile.resumeOriginalName = req.file.originalname;
         }
       } catch (error) {
@@ -211,5 +215,15 @@ cloudinary.v2.uploader.upload("sample.pdf",
     return res
       .status(500)
       .json({ message: "Internal server error", success: false });
+  }
+};
+
+export const resume = async (req, res) => {
+  try {
+    const filename = req.query.file;
+    const filepath = path.join(process.cwd(), "files", filename);
+    res.sendFile(filepath);
+  } catch (error) {
+    console.log(error);
   }
 };
