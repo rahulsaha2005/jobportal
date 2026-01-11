@@ -4,8 +4,10 @@ import HeroSection from "./HeroSection";
 import CategoryCarousel from "./CategoryCarousel";
 import LatestJobs from "./LatestJobs";
 import Footer from "./Footer";
+import GetAllJobs from "./hooks/getAllJobs";
 export default function Home() {
   // user=true;
+  GetAllJobs();
   return (
     <>
       <div className="relative  bg-linear-to-r from-purple-600 to-blue-500 text-white min-h-screen px-4 overflow-hidden">

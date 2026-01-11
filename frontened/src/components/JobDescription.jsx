@@ -1,15 +1,46 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { HiLocationMarker, HiCalendar } from "react-icons/hi";
-
+import axios from "axios";
+import { JOB_API_END_POINT } from "../utils/constant.js";
+import { useParams } from "react-router-dom";
 export default function JobDescription() {
   const [applied, setApplied] = useState(false);
+  const { id } = useParams();
+  const [jobDetail, setJobDetail] = useState(null);
+
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const response = await axios.get(`${JOB_API_END_POINT}/get/${id}`, {
+          withCredentials: true,
+        });
+
+        if (response.data.success) {
+          setJobDetail(response.data.job);
+        }
+      } catch (error) {
+        console.error("Failed to fetch job:", error);
+      }
+    };
+
+    fetchJob();
+  }, [id]);
+
+  function daysAgo(dateString) {
+    const pastDate = new Date(dateString);
+    const today = new Date();
+    const diffTime = today - pastDate; // in milliseconds
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
 
   const handleApply = () => {
     if (!applied) {
       setApplied(true);
     }
   };
+  console.log(jobDetail);
 
   return (
     <div className="w-full min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -18,10 +49,11 @@ export default function JobDescription() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
           <div>
             <h1 className="font-semibold text-xl text-gray-900">
-              Company Name
+              {jobDetail?.company?.name ? jobDetail.company.name : "XYZ"}
             </h1>
             <div className="flex items-center gap-2 text-gray-500 text-sm mt-1">
-              <HiLocationMarker className="inline" /> India
+              <HiLocationMarker className="inline" />{" "}
+              {jobDetail?.location || "India"}
             </div>
           </div>
 
@@ -30,19 +62,19 @@ export default function JobDescription() {
               className="bg-blue-100 text-blue-800 font-semibold"
               variant="ghost"
             >
-              12 Positions
+              {jobDetail?.position || "?"}
             </Badge>
             <Badge
               className="bg-red-100 text-red-600 font-semibold"
               variant="ghost"
             >
-              Part Time
+              {jobDetail?.jobType || "?"}
             </Badge>
             <Badge
               className="bg-purple-100 text-purple-700 font-semibold"
               variant="ghost"
             >
-              24 LPA
+              {jobDetail?.salary+" lpa" || "?"}
             </Badge>
           </div>
         </div>
@@ -50,13 +82,10 @@ export default function JobDescription() {
         {/* Job Title */}
         <div className="mb-4">
           <h2 className="font-bold text-2xl text-gray-800 mb-2">
-            Frontend Developer
+            {jobDetail?.title || "?"}
           </h2>
           <p className="text-gray-600 text-sm leading-relaxed">
-            We are looking for a skilled Frontend Developer to join our dynamic
-            team. You will work closely with designers and backend developers to
-            create a seamless user experience. Knowledge of React, Tailwind CSS,
-            and responsive design is required.
+            {jobDetail?.description || "?"}
           </p>
         </div>
 
@@ -64,7 +93,7 @@ export default function JobDescription() {
         <div className="flex flex-wrap gap-6 mt-4 text-gray-700 text-sm font-medium">
           <div className="flex items-center gap-2">
             <span className="font-semibold">Salary:</span>
-            <span>24 LPA</span>
+            <span> {jobDetail?.salary+"lpa" || "?"}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-semibold">Applicants:</span>
@@ -72,34 +101,31 @@ export default function JobDescription() {
           </div>
           <div className="flex items-center gap-2">
             <HiCalendar />
-            <span>Posted: 3 days ago</span>
+            <span>
+              Posted: {daysAgo(jobDetail?.createdAt) || "100000"} day ago
+            </span>
           </div>
         </div>
-
-        {/* Job Description  */}
         <div className="mt-6">
-          <h3 className="font-semibold text-lg text-gray-900 mb-2">
-            Job Description:
-          </h3>
-          <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
-            <li>Develop and maintain web applications using React.js</li>
-            <li>Collaborate with designers to implement UI/UX designs</li>
-            <li>Optimize applications for maximum speed and scalability</li>
-            <li>Participate in code reviews and team meetings</li>
-          </ul>
-        </div>
-
-        {/* Qualifications */}
-        <div className="mt-6">
-          <h3 className="font-semibold text-lg text-gray-900 mb-2">
-            Qualifications:
-          </h3>
-          <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
-            <li>2+ years experience in frontend development</li>
-            <li>Strong knowledge of JavaScript, React, and Tailwind CSS</li>
-            <li>Good understanding of REST APIs and state management</li>
-            <li>Strong problem-solving skills</li>
-          </ul>
+          {jobDetail?.requirements?.length > 0 && (
+            <div className="mt-4">
+              <h3 className="font-semibold text-lg text-gray-900 mb-3">
+                Required Skills:
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                {jobDetail.requirements.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="px-4 py-2 rounded-full bg-gradient-to-r from-green-100 to-green-200 
+                       text-green-800 font-medium shadow-sm hover:scale-105 
+                       transition-transform duration-200 cursor-pointer"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Apply Button */}

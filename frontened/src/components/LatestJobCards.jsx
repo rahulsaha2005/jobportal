@@ -1,42 +1,64 @@
 import React from "react";
-import { Badge, badgeVariants } from "./ui/badge.jsx";
+import { Badge } from "./ui/badge.jsx";
 
-export default function LatestJobCards() {
+export default function LatestJobCards({ job }) {
+  console.log(job);
+
   return (
     <div className="cursor-pointer shadow-2xl border-5 border-gray-200 bg-blue-50 text-blue-900 p-5 rounded-md">
+      {/* Company and Location */}
       <div>
-        <h1 className="font-medium text-lg">Company Name</h1>
-        <p className="text-sm text-gray-500">India</p>
+        <h1 className="font-medium text-lg">{job?.company?.name || "XYZ"}</h1>
+        <p className="text-sm text-gray-500">{job?.location || "Unknown"}</p>
       </div>
+
+      {/* Job Title and Description */}
       <div>
-        <h1 className="font-bold text-lg my-2">Job Title</h1>
+        <h1 className="font-bold text-lg my-2">
+          {job?.title || "Untitled Job"}
+        </h1>
         <p className="text-sm text-gray-600">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Lorem ipsum
-          dolor sit amet consectetur adipisicing elit. Nostrum dolore quisquam
-          autem minima voluptatem nobis commodi asperiores, doloremque ducimus
-          itaque tempore officia harum illo esse ea corrupti rem, velit cum?
+          {job?.description || "No description available."}
         </p>
       </div>
-      <div className="flex items-center gap-2 mt-4">
+
+      {/* Position, Job Type, Salary */}
+      <div className="flex items-center gap-2 mt-4 flex-wrap">
         <Badge
-          className="bg-white text-blue-700  font-semibold  mr-1"
+          className="bg-white text-blue-700 font-semibold mr-1"
           variant="ghost"
         >
-          12 Positions
+          {job?.position || "N/A"}
         </Badge>
         <Badge
           className="bg-white text-[#F83002] font-semibold mr-1"
           variant="ghost"
         >
-          Part Time
+          {job?.jobType || "N/A"}
         </Badge>
         <Badge
-          className="bg-white text-[#7209b7]  font-semibold mr-1 "
+          className="bg-white text-[#7209b7] font-semibold mr-1"
           variant="ghost"
         >
-          24 lpa
+          {job?.salary + " lpa" || "0"}
         </Badge>
       </div>
+
+      {/* Skills */}
+      {job?.requirements?.length > 0 && (
+        <div className="flex items-center gap-2 mt-4 flex-wrap">
+          <p className="text-[red]">Skills required :</p>
+          {job.requirements.map((skill, index) => (
+            <Badge
+              key={index}
+              className="bg-white text-green-700 font-semibold"
+              variant="ghost"
+            >
+              {skill}
+            </Badge>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -2,12 +2,15 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import SplitText from "gsap/SplitText";
 import LatestJobCards from "./LatestJobCards";
+import { useSelector } from "react-redux";
 
 gsap.registerPlugin(SplitText);
-const randomJobs = [1, 2, 3, 4, 5, 6, 7, 8];
 
 export default function LatestJobs() {
   const headingRef = useRef(null); // reference to the h1
+  const { allJobs } = useSelector((store) => store.job);
+  const randomJobs = allJobs;
+  console.log(allJobs);
 
   useEffect(() => {
     if (!headingRef.current) return;
@@ -40,8 +43,8 @@ export default function LatestJobs() {
         <span className="text-[#ffdf20]">Job Openings</span>
       </h1>
       <div className="relative z-10 m-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {randomJobs.slice(0, 6).map((item, index) => (
-          <LatestJobCards key={index} />
+        {randomJobs.slice(0, 6).map((job, index) => (
+          <LatestJobCards key={index} job={job}/>
         ))}
       </div>
     </div>
