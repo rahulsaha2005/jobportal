@@ -8,12 +8,21 @@ import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 export default function Job({ job }) {
   if (!job) return null; // safe check
+   function daysAgo(dateString) {
+    const pastDate = new Date(dateString);
+    const today = new Date();
+    const diffTime = today - pastDate; // in milliseconds
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
+  // console.log(job?);
+
 
   return (
     <div className="p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 shadow-blue-500/30 bg-blue-200 border-2 border-blue-600">
       {/* Top bar: date & bookmark */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">{job.postedAt || "2 days ago"}</p>
+        <p className="text-sm text-gray-500">{daysAgo(job?.createdAt)+" days ago " || "2 days ago"}</p>
         <Button variant="outline" className="rounded-full" size="icon">
           <Bookmark />
         </Button>
