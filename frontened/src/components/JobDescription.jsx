@@ -2,15 +2,23 @@ import React, { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { HiLocationMarker, HiCalendar } from "react-icons/hi";
 import axios from "axios";
-import { JOB_API_END_POINT } from "../utils/constant.js";
+import {
+  APPLICATION_API_END_POINT,
+  JOB_API_END_POINT,
+} from "../utils/constant.js";
 import { useParams } from "react-router-dom";
+import { Button } from "./ui/button.jsx";
+import {  useSelector } from "react-redux";
+import { toast } from "sonner";
 
-export default function JobDescription({ currentUserId }) {
+export default function JobDescription() {
   const { id } = useParams();
-  const [jobDetail, setJobDetail] = useState(null);
-  const [applicationStatus, setApplicationStatus] = useState(""); // "" | "pending" | "accepted" | "rejected"
+  const { user } = useSelector((store) => store.auth);
 
-  // Fetch job details
+  const [jobDetail, setJobDetailState] = useState(null);
+  const [isApplied, setIsApplied] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
+
   useEffect(() => {
     const fetchJob = async () => {
       try {
@@ -20,26 +28,21 @@ export default function JobDescription({ currentUserId }) {
 
         if (response.data.success) {
           const job = response.data.job;
-          setJobDetail(job);
+          setJobDetailState(job);
 
-          // Check if current user already applied
-          const userApplication = job.applications?.find(
-            (app) => app.applicant?._id === currentUserId
-          );
-
-          if (userApplication) {
-            setApplicationStatus(userApplication.status);
+          if (job.applications?.some((app) => app.applicant === user?._id)) {
+            setIsApplied(true);
           }
         }
       } catch (error) {
         console.error("Failed to fetch job:", error);
+        toast.error("Failed to fetch job details");
       }
     };
 
     fetchJob();
-  }, [id, currentUserId]);
+  }, [id, user?._id]);
 
-  // Helper: calculate days ago
   function daysAgo(dateString) {
     if (!dateString) return 0;
     const pastDate = new Date(dateString);
@@ -48,33 +51,40 @@ export default function JobDescription({ currentUserId }) {
     return Math.floor(diffTime / (1000 * 60 * 60 * 24));
   }
 
-  // Apply handler
-  const handleApply = async () => {
-    if (!applicationStatus) {
-      try {
-        const response = await axios.post(
-          `${JOB_API_END_POINT}/apply/${id}`,
-          {},
-          { withCredentials: true }
-        );
+  // Apply button handler
+  const applyJobHandler = async () => {
+    if (isApplied || isApplying) return;
 
-        if (response.data.success) {
-          const newApplication = response.data.application; // backend should return the created application
+    try {
+      setIsApplying(true);
+      const res = await axios.get(`${APPLICATION_API_END_POINT}/apply/${id}`, {
+        withCredentials: true,
+      });
 
-          // Update status
-          setApplicationStatus(newApplication.status);
-
-          // Update jobDetail.applications locally so UI updates
-          setJobDetail((prev) => ({
-            ...prev,
-            applications: [...(prev.applications || []), newApplication],
-          }));
-        }
-      } catch (err) {
-        console.error("Failed to apply:", err);
+      if (res.data.success) {
+        setIsApplied(true);
+        const updatedJob = {
+          ...jobDetail,
+          applications: [...jobDetail.applications, { applicant: user?._id }],
+        };
+        setJobDetailState(updatedJob);
+        toast.success(res.data.message);
       }
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Failed to apply");
+    } finally {
+      setIsApplying(false);
     }
   };
+
+  if (!jobDetail) {
+    return (
+      <div className="flex justify-center items-center h-screen text-gray-600">
+        Loading job details...
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -163,52 +173,21 @@ export default function JobDescription({ currentUserId }) {
         )}
 
         {/* Apply Button */}
-        <div className="mt-6">
-          <button
-            onClick={handleApply}
-            disabled={
-              applicationStatus === "pending" ||
-              applicationStatus === "accepted"
-            }
-            className={`px-6 py-3 rounded-lg font-semibold text-white transition-colors ${
-              applicationStatus === "pending"
-                ? "bg-yellow-500 cursor-not-allowed"
-                : applicationStatus === "accepted"
-                ? "bg-green-600 cursor-not-allowed"
-                : applicationStatus === "rejected"
-                ? "bg-red-600 hover:bg-red-700"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
-          >
-            {applicationStatus
-              ? applicationStatus.charAt(0).toUpperCase() +
-                applicationStatus.slice(1)
-              : "Apply Now"}
-          </button>
-
-          {/* Show “Applied X days ago” if user applied */}
-          {applicationStatus &&
-            applicationStatus !== "rejected" &&
-            jobDetail?.applications && (
-              <p className="text-gray-500 mt-2 text-sm">
-                Applied{" "}
-                {daysAgo(
-                  jobDetail.applications.find(
-                    (app) => app.applicant?._id === currentUserId
-                  )?.createdAt
-                )}{" "}
-                day
-                {daysAgo(
-                  jobDetail.applications.find(
-                    (app) => app.applicant?._id === currentUserId
-                  )?.createdAt
-                ) !== 1
-                  ? "s"
-                  : ""}{" "}
-                ago
-              </p>
-            )}
-        </div>
+        <Button
+          onClick={applyJobHandler}
+          disabled={isApplied || isApplying}
+          className={`mt-6 w-full py-3 text-white text-lg font-semibold rounded-lg ${
+            isApplied
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-[#7209b7] hover:bg-[#5f32ad]"
+          }`}
+        >
+          {isApplying
+            ? "Applying..."
+            : isApplied
+            ? "Already Applied"
+            : "Apply Now"}
+        </Button>
       </div>
     </div>
   );

@@ -4,8 +4,30 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover.jsx";
 import { Avatar, AvatarImage } from "../ui/avatar.jsx";
 import { LogOut, User2, Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { USER_API_END_POINT } from "../../utils/constant.js";
+import { toast } from "sonner";
+// import {auth,}
+import axios from "axios";
+import { setAuthUser } from "../../redux/authSlice.js";
+import { setAllJobs } from "../../redux/jobSlice.js";
 export const Navbar = () => {
+  const dispatch = useDispatch();
+  const handleLogout = async () => {
+    try {
+      const res = await axios.get(`${USER_API_END_POINT}/logout`, {
+        withCredentials: true,
+      });
+
+      if (res.data.success) {
+        toast("logout successfully");
+        dispatch(setAuthUser(null));
+        dispatch(setAllJobs(null));
+      }
+    } catch (error) {
+      console.log("failed to logout : ", error);
+    }
+  };
   // if user logged in->show user icon
   // else show login logout button
   // using md:hidder for showing mobile type version
@@ -62,7 +84,11 @@ export const Navbar = () => {
           {/* logout  */}
           <div className="flex items-center gap-2 cursor-pointer">
             <LogOut className="text-red-500" />
-            <Button variant="link" className="cursor-pointer">
+            <Button
+              variant="link"
+              className="cursor-pointer"
+              onClick={handleLogout}
+            >
               Logout
             </Button>
           </div>

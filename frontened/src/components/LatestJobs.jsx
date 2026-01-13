@@ -43,7 +43,7 @@ export default function LatestJobs() {
         <span className="text-[#ffdf20]">Job Openings</span>
       </h1>
       <div className="relative z-10 m-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {randomJobs.slice(0, 6).map((job, index) => (
+        {randomJobs?.slice(0, 6).map((job, index) => (
           <LatestJobCards key={index} job={job}/>
         ))}
       </div>
