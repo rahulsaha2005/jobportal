@@ -69,7 +69,6 @@ export default function Signup() {
       });
 
       if (res.data.success) {
-        dispatch(setAuthUser(res.data.user));
         toast.success(res.data.message);
         navigate("/login"); // navigate after success
       }

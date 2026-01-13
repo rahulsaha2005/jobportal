@@ -18,12 +18,12 @@ export default function Jobs() {
         </div>
 
         {/* Job Cards */}
-        {randomJobs.length === 0 ? (
+        {randomJobs?.length === 0 ? (
           <span>Job not Found</span>
         ) : (
           <div className="flex-1 md:h-[88vh] overflow-y-auto pb-5 hide-scrollbar">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 md:gap-10">
-              {randomJobs.map((job) => (
+              {randomJobs?.map((job) => (
                 <Job key={job.id} job={job} />
               ))}
             </div>

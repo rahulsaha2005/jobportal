@@ -177,18 +177,11 @@ export const updateProfile = async (req, res) => {
             resource_type: "raw", // important for PDFs, DOCX, etc.
           }
         );
-        cloudinary.v2.uploader.upload("sample.pdf", function (error, result) {
-          console.log(result, error);
-        });
+        
         console.log(cloudResponse);
         if (cloudResponse) {
-          // NOTE: If using async: true, the secure_url is generated immediately,
-          // but the transformation happens in the background.
           console.log(cloudResponse);
-          user.profile.resume = cloudResponse.secure_url.replace(
-            "/upload/",
-            "/upload/fl_inline/"
-          );
+          user.profile.resume = cloudResponse.secure_url;
           user.profile.resumeOriginalName = req.file.originalname;
         }
       } catch (error) {

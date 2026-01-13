@@ -9,7 +9,7 @@ const Browse = () => {
   return (
     <div className="max-w-6xl  mx-auto my-5">
       <h1 className="font-bold mb-4 text-xl">
-        Search Bar ({allJobs.length})
+        Search Bar ({allJobs?.length})
       </h1>
       <div
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3
@@ -17,7 +17,7 @@ const Browse = () => {
                 mx-auto md:mx-0
                 w-full max-w-[375px] md:max-w-6xl"
       >
-        {allJobs.map((value, idx) => (
+        {allJobs?.map((value, idx) => (
           <Job key={idx} job={value}  />
         ))}
       </div>

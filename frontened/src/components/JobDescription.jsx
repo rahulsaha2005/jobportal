@@ -10,7 +10,8 @@ import { useParams } from "react-router-dom";
 import { Button } from "./ui/button.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { setSingleJob } from "../redux/jobSlice.js";
+import { setAllJobs, setSingleJob } from "../redux/jobSlice.js";
+import GetAllJobs from "./hooks/getAllJobs.jsx";
 
 export default function JobDescription() {
   const { id } = useParams();
@@ -41,7 +42,7 @@ export default function JobDescription() {
     };
 
     fetchJob();
-  }, [id, user?._id]);
+  }, [id, dispatch, user?._id]);
 
   function daysAgo(dateString) {
     if (!dateString) return 0;
@@ -51,28 +52,33 @@ export default function JobDescription() {
     return Math.floor(diffTime / (1000 * 60 * 60 * 24));
   }
 
-  // Apply button handler
   const applyJobHandler = async () => {
     if (isApplied || isApplying) return;
 
     try {
       setIsApplying(true);
+
       const res = await axios.get(`${APPLICATION_API_END_POINT}/apply/${id}`, {
         withCredentials: true,
       });
 
       if (res.data.success) {
+        dispatch(setSingleJob(res.data.job));
         setIsApplied(true);
-        const updatedJob = {
-          ...singleJob,
-          applications: [...singleJob.applications, { applicant: user?._id }],
-        };
-        dispatch(setSingleJob(updatedJob));
+        try {
+          const res = await axios.get(`${JOB_API_END_POINT}/get`, {
+            withCredentials: true,
+          });
+          if (res.data.success) {
+            dispatch(setAllJobs(res.data.jobs));
+          }
+        } catch (error) {
+          console.log(error);
+        }
         toast.success(res.data.message);
       }
     } catch (error) {
-      console.error(error);
-      toast.error(error?.response?.data?.message || "Failed to apply");
+      toast.error(error?.response?.data?.message);
     } finally {
       setIsApplying(false);
     }

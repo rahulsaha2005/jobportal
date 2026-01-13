@@ -13,9 +13,6 @@ export default function Profile() {
   const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
   console.log(user);
-  function openResume(file) {
-    window.open(USER_API_END_POINT + `/resume?file=${file}`, "_blank");
-  }
 
   const resumeUrl = user?.profile?.resume || null;
   console.log(resumeUrl);
@@ -119,8 +116,9 @@ export default function Profile() {
                 href={resumeUrl}
                 target="_blank"
                 rel="noreferrer"
+                className="m-2 text-[13px] text-red-500 text-shadow-md"
               >
-                View Resume (PDF)
+                 View Resume (PDF)
               </a>
               // <button
               //   onClick={() => openResume(resumeUrl)}

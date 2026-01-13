@@ -10,7 +10,7 @@ import { toast } from "sonner";
 // import {auth,}
 import axios from "axios";
 import { setAuthUser } from "../../redux/authSlice.js";
-import { setAllJobs } from "../../redux/jobSlice.js";
+import { setAllJobs, setSingleJob } from "../../redux/jobSlice.js";
 export const Navbar = () => {
   const dispatch = useDispatch();
   const handleLogout = async () => {
@@ -23,6 +23,7 @@ export const Navbar = () => {
         toast("logout successfully");
         dispatch(setAuthUser(null));
         dispatch(setAllJobs(null));
+        dispatch(setSingleJob(null));
       }
     } catch (error) {
       console.log("failed to logout : ", error);
