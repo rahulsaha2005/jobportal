@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setAuthUser } from "../../redux/authSlice";
 import { Loader2 } from "lucide-react";
 
-export default function login() {
+export default function Login() {
   const [input, setInput] = useState({
     email: "",
     password: "",
