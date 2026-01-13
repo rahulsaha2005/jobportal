@@ -8,17 +8,17 @@ import {
 } from "../utils/constant.js";
 import { useParams } from "react-router-dom";
 import { Button } from "./ui/button.jsx";
-import {  useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
+import { setSingleJob } from "../redux/jobSlice.js";
 
 export default function JobDescription() {
   const { id } = useParams();
   const { user } = useSelector((store) => store.auth);
-
-  const [jobDetail, setJobDetailState] = useState(null);
   const [isApplied, setIsApplied] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
-
+  const { singleJob } = useSelector((store) => store.job);
+  const dispatch = useDispatch();
   useEffect(() => {
     const fetchJob = async () => {
       try {
@@ -28,7 +28,7 @@ export default function JobDescription() {
 
         if (response.data.success) {
           const job = response.data.job;
-          setJobDetailState(job);
+          dispatch(setSingleJob(job));
 
           if (job.applications?.some((app) => app.applicant === user?._id)) {
             setIsApplied(true);
@@ -64,10 +64,10 @@ export default function JobDescription() {
       if (res.data.success) {
         setIsApplied(true);
         const updatedJob = {
-          ...jobDetail,
-          applications: [...jobDetail.applications, { applicant: user?._id }],
+          ...singleJob,
+          applications: [...singleJob.applications, { applicant: user?._id }],
         };
-        setJobDetailState(updatedJob);
+        dispatch(setSingleJob(updatedJob));
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -78,7 +78,7 @@ export default function JobDescription() {
     }
   };
 
-  if (!jobDetail) {
+  if (!singleJob) {
     return (
       <div className="flex justify-center items-center h-screen text-gray-600">
         Loading job details...
@@ -93,10 +93,10 @@ export default function JobDescription() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
           <div>
             <h1 className="font-semibold text-xl text-gray-900">
-              {jobDetail?.company?.name || "XYZ"}
+              {singleJob?.company?.name || "XYZ"}
             </h1>
             <div className="flex items-center gap-2 text-gray-500 text-sm mt-1">
-              <HiLocationMarker /> {jobDetail?.location || "India"}
+              <HiLocationMarker /> {singleJob?.location || "India"}
             </div>
           </div>
 
@@ -105,19 +105,19 @@ export default function JobDescription() {
               className="bg-blue-100 text-blue-800 font-semibold"
               variant="ghost"
             >
-              {jobDetail?.position || "?"}
+              {singleJob?.position || "?"}
             </Badge>
             <Badge
               className="bg-red-100 text-red-600 font-semibold"
               variant="ghost"
             >
-              {jobDetail?.jobType || "?"}
+              {singleJob?.jobType || "?"}
             </Badge>
             <Badge
               className="bg-purple-100 text-purple-700 font-semibold"
               variant="ghost"
             >
-              {jobDetail?.salary ? jobDetail.salary + " lpa" : "?"}
+              {singleJob?.salary ? singleJob.salary + " lpa" : "?"}
             </Badge>
           </div>
         </div>
@@ -125,10 +125,10 @@ export default function JobDescription() {
         {/* Job Title & Description */}
         <div className="mb-4">
           <h2 className="font-bold text-2xl text-gray-800 mb-2">
-            {jobDetail?.title || "?"}
+            {singleJob?.title || "?"}
           </h2>
           <p className="text-gray-600 text-sm leading-relaxed">
-            {jobDetail?.description || "?"}
+            {singleJob?.description || "?"}
           </p>
         </div>
 
@@ -136,29 +136,29 @@ export default function JobDescription() {
         <div className="flex flex-wrap gap-6 mt-4 text-gray-700 text-sm font-medium">
           <div className="flex items-center gap-2">
             <span className="font-semibold">Salary:</span>
-            <span>{jobDetail?.salary ? jobDetail.salary + " lpa" : "?"}</span>
+            <span>{singleJob?.salary ? singleJob.salary + " lpa" : "?"}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="font-semibold">Applicants:</span>
-            <span>{jobDetail?.applications?.length || 0} Applied</span>
+            <span>{singleJob?.applications?.length || 0} Applied</span>
           </div>
           <div className="flex items-center gap-2">
             <HiCalendar />
             <span>
-              Posted: {daysAgo(jobDetail?.createdAt)} day
-              {daysAgo(jobDetail?.createdAt) !== 1 ? "s" : ""} ago
+              Posted: {daysAgo(singleJob?.createdAt)} day
+              {daysAgo(singleJob?.createdAt) !== 1 ? "s" : ""} ago
             </span>
           </div>
         </div>
 
         {/* Required Skills */}
-        {jobDetail?.requirements?.length > 0 && (
+        {singleJob?.requirements?.length > 0 && (
           <div className="mt-6">
             <h3 className="font-semibold text-lg text-gray-900 mb-3">
               Required Skills:
             </h3>
             <div className="flex flex-wrap gap-3">
-              {jobDetail.requirements.map((skill, index) => (
+              {singleJob.requirements.map((skill, index) => (
                 <span
                   key={index}
                   className="px-4 py-2 rounded-full bg-gradient-to-r from-green-100 to-green-200 
