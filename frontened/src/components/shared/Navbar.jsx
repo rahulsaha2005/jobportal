@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../ui/button.jsx";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover.jsx";
 import { Avatar, AvatarImage } from "../ui/avatar.jsx";
@@ -7,73 +7,70 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { USER_API_END_POINT } from "../../utils/constant.js";
 import { toast } from "sonner";
-// import {auth,}
 import axios from "axios";
 import { setAuthUser } from "../../redux/authSlice.js";
 import { setAllJobs, setSingleJob } from "../../redux/jobSlice.js";
+
 export const Navbar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+
+  // Scroll state for fade effect
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Mobile menu toggle
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Logout function
   const handleLogout = async () => {
     try {
       const res = await axios.get(`${USER_API_END_POINT}/logout`, {
         withCredentials: true,
       });
-
       if (res.data.success) {
-        toast("logout successfully");
+        toast("Logout successfully");
         dispatch(setAuthUser(null));
         dispatch(setAllJobs(null));
         dispatch(setSingleJob(null));
+        navigate("/login");
       }
     } catch (error) {
-      console.log("failed to logout : ", error);
+      console.error("Failed to logout:", error);
     }
   };
-  // if user logged in->show user icon
-  // else show login logout button
-  // using md:hidder for showing mobile type version
-  // using hidden md:flex for showing desktop version
-  // it show hamburgericon for menu open and X for crossing that icon and hidding
-  const { user } = useSelector((state) => state.auth);
-  //menu
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const navigate = useNavigate();
-  // using shade ui cn i used avtar and popover for profile view
+
+  // Profile Popover content
   const popContent = (
     <Popover>
-      {/* as child here used because i don't want brwoswer to add new div to my existing data
-      that i sending to broweser to render
-     */}
       <PopoverTrigger asChild>
         <Avatar className="cursor-pointer">
           <AvatarImage
             src={user?.profile?.profilePhoto || "https://github.com/shadcn.png"}
-            alt="@shadcn"
+            alt={user?.fullname || "Profile"}
           />
         </Avatar>
       </PopoverTrigger>
 
-      {/* popover content containg image ,name,status ,logout and view prfile */}
       <PopoverContent className="w-80">
-        <div className="flex flex-col gap-2 mb-4">
-          <div className="flex items-center gap-4">
-            {/* image */}
-            <Avatar className="cursor-pointer">
-              <AvatarImage src={user?.profile.profilePhoto} alt="@shadcn" />
-            </Avatar>
-
-            {/* data  */}
-            <div>
-              <h4 className="font-medium">{user ? user.fullname : null}</h4>
-              <p className="text-xs text-muted-foreground">
-                <span className="font-medium">Status - </span>{" "}
-                {user ? user.role : null}
-              </p>
-            </div>
+        <div className="flex items-center gap-4 mb-4">
+          <Avatar>
+            <AvatarImage src={user?.profile?.profilePhoto} alt={user?.fullname} />
+          </Avatar>
+          <div>
+            <h4 className="font-medium">{user?.fullname}</h4>
+            <p className="text-xs text-muted-foreground">
+              <span className="font-medium">Status - </span>
+              {user?.role}
+            </p>
           </div>
         </div>
 
-        {/* view profile */}
         <div className="flex flex-col gap-2 text-gray-600">
           <div className="flex items-center gap-2 cursor-pointer">
             <User2 className="text-blue-500" />
@@ -82,14 +79,9 @@ export const Navbar = () => {
             </Button>
           </div>
 
-          {/* logout  */}
           <div className="flex items-center gap-2 cursor-pointer">
             <LogOut className="text-red-500" />
-            <Button
-              variant="link"
-              className="cursor-pointer"
-              onClick={handleLogout}
-            >
+            <Button variant="link" onClick={handleLogout}>
               Logout
             </Button>
           </div>
@@ -98,19 +90,16 @@ export const Navbar = () => {
     </Popover>
   );
 
-  //  login sign button
+  // Login / Signup buttons
   const LoginSignup = (
     <div className="flex flex-col sm:flex-row gap-2">
       <Link to="/login">
-        <Button
-          className="border border-indigo-600 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200 px-4 py-2 rounded w-full sm:w-auto"
-          variant="outline"
-        >
+        <Button className="border border-indigo-600 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors duration-200 px-4 py-2 rounded w-full sm:w-auto">
           LOGIN
         </Button>
       </Link>
       <Link to="/signup">
-        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white transition-colors duration-200 px-4 py-2 rounded w-full sm:w-auto">
+        <Button className="bg-indigo-600 hover:bg-indigo-700 text-black transition-colors duration-200 px-4 py-2 rounded w-full sm:w-auto">
           SIGN UP
         </Button>
       </Link>
@@ -118,17 +107,20 @@ export const Navbar = () => {
   );
 
   return (
-    // showing website name
-    <nav className="bg-white shadow">
-      <div className="flex items-center justify-between mx-auto max-w-6xl h-16 px-4">
-        <h1 className="text-2xl font-bold">
-          Job
-          <span className="text-indigo-600 hover:text-indigo-800">Sphere</span>
+    <nav
+      className={`sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow transition-all duration-300 ${
+        scrolled ? "opacity-80 py-2" : "opacity-100 py-4"
+      }`}
+    >
+      <div className="flex items-center justify-between mx-auto max-w-6xl px-4">
+        {/* Logo */}
+        <h1 className="text-2xl font-bold text-black">
+          Job<span className="text-indigo-600 hover:text-indigo-800">Sphere</span>
         </h1>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-12">
-          <ul className="flex font-medium items-center gap-5">
+          <ul className="flex font-medium items-center gap-5 text-black">
             <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
               <Link to="/">Home</Link>
             </li>
@@ -156,8 +148,8 @@ export const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden px-4 pb-4 space-y-3">
-          <ul className="flex flex-col gap-2">
+        <div className="md:hidden px-4 pb-4 space-y-3 bg-black/90">
+          <ul className="flex flex-col gap-2 text-black">
             <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
               <Link to="/">Home</Link>
             </li>
