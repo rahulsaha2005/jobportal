@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Navbar } from "./shared/navbar";
 import HeroSection from "./HeroSection";
 import CategoryCarousel from "./CategoryCarousel";
 import LatestJobs from "./LatestJobs";
 import Footer from "./Footer";
-import GetAllJobs from "./hooks/getAllJobs";
+import GetAllJobs from "./hooks/GetAllJobs.jsx";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 export default function Home() {
   // user=true;
+  const { user } = useSelector((store) => store.auth);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user?.role !== "student") {
+      navigate("/admin/Companies");
+    }
+  }, []);
   GetAllJobs();
   return (
     <>
