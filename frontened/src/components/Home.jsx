@@ -7,6 +7,7 @@ import Footer from "./Footer";
 import GetAllJobs from "./hooks/GetAllJobs.jsx";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import GetAppliedJobs from "./hooks/GetAppliedJobs.jsx";
 export default function Home() {
   // user=true;
   const { user } = useSelector((store) => store.auth);
@@ -15,9 +16,9 @@ export default function Home() {
     if (user?.role !== "student" && user?.role === "recuriter") {
       navigate("/admin/Companies");
     }
-    
   }, []);
- GetAllJobs();
+  GetAllJobs();
+  GetAppliedJobs();
   return (
     <>
       <div className="relative  bg-linear-to-r from-purple-600 to-blue-500 text-white min-h-screen px-4 overflow-hidden">

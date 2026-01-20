@@ -1,13 +1,15 @@
-// MainLayout.jsx
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { Navbar } from "./shared/navbar.jsx";
 
 function MainLayout() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <Outlet /> {/* This renders the current route page */}
+
+      <main>
+        <Outlet />
+      </main>
     </div>
   );
 }

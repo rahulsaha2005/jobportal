@@ -9,10 +9,21 @@ import {
   TableCell,
   TableCaption,
 } from "./ui/table";
+import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function AppliedJobTable() {
+  const { getAppliedJobs } = useSelector((store) => store.job);
   const status = true;
+  function DateShortener(dateString) {
+    if (!dateString) return "DATE";
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+  }
+  const navigate = useNavigate();
+  console.log(getAppliedJobs);
   return (
     <div>
       <Table>
@@ -20,10 +31,11 @@ export default function AppliedJobTable() {
         {/* top row */}
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
+            <TableHead>DATE</TableHead>
             <TableHead>Job Role</TableHead>
             <TableHead>Company</TableHead>
             <TableHead className="text-right">Status</TableHead>
+            <TableHead className="text-right"> View Description</TableHead>
           </TableRow>
         </TableHeader>
         {/* remaining data row */}
@@ -38,23 +50,32 @@ export default function AppliedJobTable() {
               </TableCell>
             </TableRow>
           ) : (
-            [1, 2, 3, 4].map((item, idx) => (
+            getAppliedJobs?.map((item, idx) => (
               <TableRow key={idx}>
-                <TableCell>date</TableCell>
-                <TableCell>title</TableCell>
-                <TableCell>company name</TableCell>
+                <TableCell>{DateShortener(item?.createdAt)}</TableCell>
+                <TableCell>{item?.job?.title || "JOB ROLE"}</TableCell>
+                <TableCell>{item?.job?.company?.name || "XYZ"}</TableCell>
                 <TableCell className="text-right">
                   <Badge
                     className={`${
-                      status === "rejected"
+                      item?.status === "rejected"
                         ? "bg-red-400"
-                        : status === "pending"
+                        : item?.status === "pending"
                           ? "bg-gray-400"
                           : "bg-green-400"
                     }`}
                   >
-                    passed
+                    {item?.status}
                   </Badge>
+                </TableCell>
+                <TableCell className="flex justify-end">
+                  <Button onClick={
+                    (e)=>
+                    {
+                      e.preventDefault();
+                      navigate(`http://localhost:5173/description/${item?.job?._id}`)
+                    }
+                  }>click on me</Button>
                 </TableCell>
               </TableRow>
             ))

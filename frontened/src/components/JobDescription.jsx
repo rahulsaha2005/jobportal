@@ -99,7 +99,7 @@ export default function JobDescription() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div className="w-full min-h-screen bg-gray-100 flex items-center justify-center pt-10">
       <div className="bg-white max-w-5xl w-full mx-auto my-6 rounded-3xl shadow-lg p-6 sm:p-8 transition-transform hover:scale-[1.01]">
         {/* Header: Company Info + Badges */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">

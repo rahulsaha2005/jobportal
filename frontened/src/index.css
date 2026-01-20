@@ -1,5 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+/* global.css */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 
 @custom-variant dark (&:is(.dark *));
 

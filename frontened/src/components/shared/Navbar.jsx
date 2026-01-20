@@ -19,7 +19,7 @@ export const Navbar = () => {
   // Scroll state for fade effect
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 80);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -115,8 +115,9 @@ export const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow transition-opacity duration-300
- ${scrolled ? "opacity-80 py-2" : "opacity-100 py-4"}`}
+      className={`sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow  ${
+        scrolled ? "opacity-80 py-2" : "opacity-100 py-4"
+      }`}
     >
       <div className="flex items-center justify-between mx-auto max-w-6xl px-4">
         {/* Logo */}
