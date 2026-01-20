@@ -115,9 +115,8 @@ export const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow transition-all duration-300 ${
-        scrolled ? "opacity-80 py-2" : "opacity-100 py-4"
-      }`}
+      className={`sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow transition-opacity duration-300
+ ${scrolled ? "opacity-80 py-2" : "opacity-100 py-4"}`}
     >
       <div className="flex items-center justify-between mx-auto max-w-6xl px-4">
         {/* Logo */}
@@ -130,20 +129,7 @@ export const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-12">
           <ul className="flex font-medium items-center gap-5 text-black">
-            {user?.role === "student" ? (
-              <>
-                {/* {" student side"} */}
-                <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
-                  <Link to="/">Home</Link>
-                </li>
-                <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
-                  <Link to="/Jobs">Jobs</Link>
-                </li>
-                <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
-                  <Link to="/Browse">Browse</Link>
-                </li>
-              </>
-            ) : user?.role === "recruiter" ? (
+            {user?.role === "recruiter" ? (
               <>
                 {/* {"recruiter side "} */}
                 <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
@@ -154,7 +140,17 @@ export const Navbar = () => {
                 </li>
               </>
             ) : (
-              <>hello, till not login</>
+              <>
+                <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
+                  <Link to="/">Home</Link>
+                </li>
+                <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
+                  <Link to="/Jobs">Jobs</Link>
+                </li>
+                <li className="hover:text-indigo-600 cursor-pointer transition-colors duration-200">
+                  <Link to="/Browse">Browse</Link>
+                </li>
+              </>
             )}
           </ul>
           {!user ? LoginSignup : popContent}

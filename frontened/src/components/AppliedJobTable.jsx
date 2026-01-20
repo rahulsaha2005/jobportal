@@ -49,8 +49,8 @@ export default function AppliedJobTable() {
                       status === "rejected"
                         ? "bg-red-400"
                         : status === "pending"
-                        ? "bg-gray-400"
-                        : "bg-green-400"
+                          ? "bg-gray-400"
+                          : "bg-green-400"
                     }`}
                   >
                     passed

@@ -6,12 +6,11 @@ import {
   APPLICATION_API_END_POINT,
   JOB_API_END_POINT,
 } from "../utils/constant.js";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "./ui/button.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { setAllJobs, setSingleJob } from "../redux/jobSlice.js";
-import GetAllJobs from "./hooks/getAllJobs.jsx";
 
 export default function JobDescription() {
   const { id } = useParams();
@@ -20,6 +19,7 @@ export default function JobDescription() {
   const [isApplying, setIsApplying] = useState(false);
   const { singleJob } = useSelector((store) => store.job);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchJob = async () => {
       try {
@@ -53,6 +53,12 @@ export default function JobDescription() {
   }
 
   const applyJobHandler = async () => {
+    if (user === null || user === undefined) {
+      toast("Login First Then Apply");
+      navigate("/login");
+      return;
+    }
+
     if (isApplied || isApplying) return;
 
     try {
@@ -188,11 +194,13 @@ export default function JobDescription() {
               : "bg-[#7209b7] hover:bg-[#5f32ad]"
           }`}
         >
-          {isApplying
+          {isApplying && user
             ? "Applying..."
-            : isApplied
-            ? "Already Applied"
-            : "Apply Now"}
+            : user
+              ? isApplied
+                ? "Already Applied"
+                : "Apply Now"
+              : "Apply Now"}
         </Button>
       </div>
     </div>

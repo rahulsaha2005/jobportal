@@ -12,11 +12,12 @@ export default function Home() {
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   useEffect(() => {
-    if (user?.role !== "student") {
+    if (user?.role !== "student" && user?.role === "recuriter") {
       navigate("/admin/Companies");
     }
+    
   }, []);
-  GetAllJobs();
+ GetAllJobs();
   return (
     <>
       <div className="relative  bg-linear-to-r from-purple-600 to-blue-500 text-white min-h-screen px-4 overflow-hidden">

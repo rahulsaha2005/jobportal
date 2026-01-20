@@ -8,6 +8,7 @@ import {
 } from "./ui/carousel";
 import { Button } from "./ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function CategoryCarousel() {
   const categories = [
@@ -22,11 +23,19 @@ export default function CategoryCarousel() {
     "Mobile Development",
     "Product Management",
   ];
+  const navigate = useNavigate();
+  const handleSearchUrl = (skill) => {
+    const params = new URLSearchParams();
+    params.append("skill", skill);
+
+    const url = `http://localhost:5173/Browse?${params}`;
+    navigate(url);
+  };
 
   return (
     <div className="relative w-full max-w-4xl mx-auto my-10 p-5">
       <Carousel className="w-full">
-        <CarouselContent className="px-12"> 
+        <CarouselContent className="px-12">
           {categories.map((cat, index) => (
             <CarouselItem
               key={index}
@@ -35,6 +44,10 @@ export default function CategoryCarousel() {
               <Button
                 variant="outline"
                 className="rounded-full w-full text-[12px] lg:text-[14px] font-bold bg-black-200"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSearchUrl(e.target.innerText);
+                }}
               >
                 {cat}
               </Button>
