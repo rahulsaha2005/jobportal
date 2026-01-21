@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Button } from "../ui/button.jsx";
 import { COMPANY_API_END_POINT } from "../../utils/constant.js";
-import { toast } from "../ui/sonner.jsx";
+// import { toast } from "../ui/sonner.jsx";
+import { toast } from "sonner";
+import AdminRegisteredCompany from "../hooks/AdminRegisteredCompany.jsx";
 
 export default function RegisterCompany() {
   const [CompanyRegisterData, setCompanyRegisterData] = useState({
@@ -54,6 +56,7 @@ export default function RegisterCompany() {
       );
       if (res.data.success) {
         console.log("Company Registered:", res.data);
+        AdminRegisteredCompany();
         toast("Company Registered Successfully!");
         setCompanyRegisterData({
           name: "",

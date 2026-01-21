@@ -2,7 +2,7 @@ import { Company } from "../models/company.model.js";
 
 export const registerCompany = async (req, res) => {
   try {
-    const { name, description, website, location, logo } = req.body;
+    const { name, description, website, city, state, country, logo } = req.body;
     if (!name) {
       return res.status(400).json({
         message: "company name is required",
@@ -11,6 +11,8 @@ export const registerCompany = async (req, res) => {
     }
 
     let company = await Company.findOne({ name });
+    let location = `${city} ${state} ${country}`;
+
     if (company) {
       return res.status(400).json({
         message: "you can't register same company",
