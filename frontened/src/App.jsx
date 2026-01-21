@@ -11,6 +11,7 @@ import Companies from "./components/admin/Companies.jsx";
 import Adminjobs from "./components/admin/AdminJobs.jsx";
 import AdminRegisterCompany from "./components/admin/AdminRegisterCompany.jsx";
 import AdminUpdateCompany from "./components/admin/AdminUpdateCompany.jsx";
+import AdminCompanyDescription from "./components/admin/AdminCompanyDescription.jsx";
 
 function App() {
   const appRouter = createBrowserRouter([
@@ -29,6 +30,7 @@ function App() {
         { path: "/admin/jobs", element: <Adminjobs /> },
         { path: "/admin/register/company", element: <AdminRegisterCompany /> },
         { path: "/admin/update/company", element: <AdminUpdateCompany /> },
+        { path: "/admin/company/info", element: <AdminCompanyDescription /> },
       ],
     },
   ]);

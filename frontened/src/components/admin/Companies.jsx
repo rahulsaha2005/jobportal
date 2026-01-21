@@ -143,6 +143,15 @@ export default function Companies() {
                     Edit
                   </Button>
                 </TableCell>
+                <TableCell
+                  className="p-3 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/admin/company/info?id=${company._id}`);
+                  }}
+                >
+                  ...
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -10,7 +10,10 @@ import { toast } from "sonner";
 import axios from "axios";
 import { setAuthUser } from "../../redux/authSlice.js";
 import { setAllJobs, setSingleJob } from "../../redux/jobSlice.js";
-import { setUploadRegisterCompanyData } from "../../redux/companySlice.js";
+import {
+  setSingleCompanyData,
+  setUploadRegisterCompanyData,
+} from "../../redux/companySlice.js";
 
 export const Navbar = () => {
   const dispatch = useDispatch();
@@ -40,6 +43,7 @@ export const Navbar = () => {
         dispatch(setAllJobs(null));
         dispatch(setSingleJob(null));
         dispatch(setUploadRegisterCompanyData(null));
+        dispatch(setSingleCompanyData(null));
         navigate("/login");
       }
     } catch (error) {
@@ -123,10 +127,18 @@ export const Navbar = () => {
     >
       <div className="flex items-center justify-between mx-auto max-w-6xl px-4">
         {/* Logo */}
-        <h1 className="text-2xl font-bold text-black">
-          Job
-          <span className="text-indigo-600 hover:text-indigo-800">Sphere</span>
-        </h1>
+        <div
+          onClick={(e) => {
+            navigate("/");
+          }}
+        >
+          <h1 className="text-2xl font-bold text-black">
+            Job
+            <span className="text-indigo-600 hover:text-indigo-800">
+              Sphere
+            </span>
+          </h1>
+        </div>
 
         {/* Desktop Menu */}
 
