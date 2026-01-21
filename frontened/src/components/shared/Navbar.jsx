@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import { setAuthUser } from "../../redux/authSlice.js";
 import { setAllJobs, setSingleJob } from "../../redux/jobSlice.js";
+import { setUploadRegisterCompanyData } from "../../redux/companySlice.js";
 
 export const Navbar = () => {
   const dispatch = useDispatch();
@@ -38,6 +39,7 @@ export const Navbar = () => {
         dispatch(setAuthUser(null));
         dispatch(setAllJobs(null));
         dispatch(setSingleJob(null));
+        dispatch(setUploadRegisterCompanyData(null));
         navigate("/login");
       }
     } catch (error) {

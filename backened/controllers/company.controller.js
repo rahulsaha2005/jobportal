@@ -50,6 +50,7 @@ export const getCompany = async (req, res) => {
         success: false,
       });
     }
+    console.log(companies);
     return res.status(200).json({
       message: "company found successfully",
       success: true,
@@ -82,9 +83,10 @@ export const getCompanyById = async (req, res) => {
 
 export const updateCompany = async (req, res) => {
   try {
-    const { name, description, website, location, logo } = req.body;
+    const { name, description, website, city, state, country, logo } = req.body;
     const file = req.file;
-    // cloudinary
+
+    const location = [city, state, country].filter(Boolean).join(" ");
 
     const updateData = { name, description, website, location };
     const company = await Company.findByIdAndUpdate(req.params.id, updateData, {
@@ -92,17 +94,22 @@ export const updateCompany = async (req, res) => {
     });
 
     if (!company) {
-      return req.status(404).json({
-        message: "company not found",
+      return res.status(404).json({
+        message: "Company not found",
         success: false,
       });
     }
+
     return res.status(200).json({
-      message: " company information update successfully",
+      message: "Company updated successfully",
       success: true,
       company,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return res.status(500).json({
+      message: "Server error",
+      success: false,
+    });
   }
 };

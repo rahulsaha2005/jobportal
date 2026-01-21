@@ -15,14 +15,43 @@ import {
   TableCaption,
 } from "../ui/table.jsx";
 import { toast } from "sonner";
+import AdminRegisteredCompany from "../hooks/AdminRegisteredCompany.jsx";
 
 export default function Companies() {
   const { registerCompanyData } = useSelector((store) => store.company);
   const navigate = useNavigate();
+  AdminRegisteredCompany();
+
+  function generateLogo(name = "") {
+    const initials = name
+      ? name
+          .split(" ")
+          .map((word) => word[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase()
+      : "?";
+
+    const size = 100;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = "#feb448";
+    ctx.fillRect(0, 0, size, size);
+
+    ctx.fillStyle = "#fff";
+    ctx.font = `${size / 2}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(initials, size / 2, size / 2);
+
+    return canvas.toDataURL();
+  }
 
   return (
     <div className="p-4">
-      {/* Search & Register */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 p-5">
         <form className="flex w-full max-w-xl">
           <input
@@ -54,7 +83,6 @@ export default function Companies() {
         </Button>
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto mt-6 bg-white shadow-lg rounded-2xl">
         <Table className="min-w-full divide-y divide-gray-200">
           <TableCaption className="text-left text-gray-500 p-4">
@@ -78,6 +106,9 @@ export default function Companies() {
               <TableHead className="p-3 text-left text-gray-700">
                 Actions
               </TableHead>
+              <TableHead className="p-3 text-left text-gray-700">
+                Info
+              </TableHead>
             </TableRow>
           </TableHeader>
 
@@ -89,7 +120,7 @@ export default function Companies() {
               >
                 <TableCell className="p-3">
                   <img
-                    src={company.logo}
+                    src={company.logo || generateLogo(company.name)}
                     alt={company.name}
                     className="w-12 h-12 rounded-full object-cover"
                   />
@@ -102,7 +133,13 @@ export default function Companies() {
                 </TableCell>
                 <TableCell className="p-3">{company.location}</TableCell>
                 <TableCell className="p-3 flex gap-2">
-                  <Button className="bg-[#4f39f6] hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm"  >
+                  <Button
+                    className="bg-[#4f39f6] hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(`/admin/update/company?id=${company._id}`);
+                    }}
+                  >
                     Edit
                   </Button>
                 </TableCell>
