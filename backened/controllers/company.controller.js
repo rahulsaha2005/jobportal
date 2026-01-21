@@ -2,15 +2,15 @@ import { Company } from "../models/company.model.js";
 
 export const registerCompany = async (req, res) => {
   try {
-    const { companyName } = req.body;
-    if (!companyName) {
+    const { name, description, website, location, logo } = req.body;
+    if (!name) {
       return res.status(400).json({
         message: "company name is required",
         success: false,
       });
     }
 
-    let company = await Company.findOne({ name: companyName });
+    let company = await Company.findOne({ name });
     if (company) {
       return res.status(400).json({
         message: "you can't register same company",
@@ -19,7 +19,11 @@ export const registerCompany = async (req, res) => {
     }
 
     company = await Company.create({
-      name: companyName,
+      name,
+      description,
+      website,
+      location,
+      logo,
       userId: req.id,
     });
 
@@ -76,7 +80,7 @@ export const getCompanyById = async (req, res) => {
 
 export const updateCompany = async (req, res) => {
   try {
-    const { name, description, website, location } = req.body;
+    const { name, description, website, location, logo } = req.body;
     const file = req.file;
     // cloudinary
 

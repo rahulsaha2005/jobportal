@@ -13,7 +13,7 @@ export default function Home() {
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   useEffect(() => {
-    if (user?.role !== "student" && user?.role === "recuriter") {
+    if (user?.role !== "student" && user?.role === "recruiter") {
       navigate("/admin/Companies");
     }
   }, []);
